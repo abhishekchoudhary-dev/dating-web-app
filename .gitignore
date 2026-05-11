@@ -1,0 +1,24 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Project ###
+.DS_Store
+.env
+
+### Spring Boot (backend) ###
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### React Router (frontend) ###
+frontend/.react-router/
+frontend/build/
+frontend/node_modules/
+
