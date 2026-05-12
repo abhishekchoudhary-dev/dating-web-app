@@ -1,0 +1,56 @@
+package com.matchme.backend.profile;
+
+
+import com.matchme.backend.user.User;
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.*;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name="user_profiles")
+public class UserProfile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
+    @OneToOne
+    @JoinColumn(name="user_id", nullable=false, unique = true)
+    private User user;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private int age;
+    
+    @Column(nullable = false)
+    private String gender;
+
+    @Column(nullable = false)
+    private String city;
+
+    @ManyToMany
+    @JoinTable
+    (   name="user_profile_interests",
+        joinColumns = @JoinColumn(name="profile_id"),
+        inverseJoinColumns = @JoinColumn(name="interest_id")
+    )
+    private List<Interest> interests;
+
+
+    @ElementCollection
+    @CollectionTable
+    (
+        name="user_profile_languages",
+        joinColumns = @JoinColumn(name = "profile_id")
+    )
+    @Column(name = "language")
+    private List<String> languages;
+    
+    
+    
+}
