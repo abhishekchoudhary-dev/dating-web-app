@@ -17,16 +17,24 @@ public class UserProfileController {
 
     private final UserProfileService userProfileService;
 
-    // Create or update profile
+    // Create profile endpoint mapping
     @PostMapping("/profile")
-    public ResponseEntity<UserProfile> saveProfile(
+    public ResponseEntity<UserProfile> createProfile(
             @AuthenticationPrincipal User user,
             @RequestBody UserProfileRequest request) {
-        UserProfile profile = userProfileService.saveProfile(user, request);
+        UserProfile profile = userProfileService.createProfile(user, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(profile);
     }
 
-    // Get one recommended match
+    @PatchMapping("/profile")
+    public ResponseEntity<UserProfile> updateProfile(
+            @AuthenticationPrincipal User user,
+            @RequestBody UserProfileRequest request) {
+        UserProfile profile = userProfileService.updateProfile(user, request);
+        return ResponseEntity.ok(profile);
+    }
+
+    // Endpoint to get a matching person
     @GetMapping("/users")
     public ResponseEntity<UserProfileResponse> getMatch(
             @AuthenticationPrincipal User user) {
@@ -34,7 +42,7 @@ public class UserProfileController {
         return ResponseEntity.ok(match);
     }
 
-    // Get full profile by id
+    // Endpoint for user to open their profile
     @GetMapping("/users/{id}")
     public ResponseEntity<UserProfile> getProfile(@PathVariable Long id) {
         UserProfile profile = userProfileService.getProfileById(id);

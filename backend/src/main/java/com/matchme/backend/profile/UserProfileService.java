@@ -1,6 +1,7 @@
 package com.matchme.backend.profile;
 
 import com.matchme.backend.user.User;
+import com.matchme.backend.user.UserRepository;
 import lombok.*;
 import org.springframework.stereotype.*;
 import java.util.*;
@@ -10,25 +11,44 @@ import com.matchme.backend.profile.dto.UserProfileResponse;
 @RequiredArgsConstructor
 @Service
 public class UserProfileService {
+    private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
-    private final InterestRepository interestRepository;
 
-    //create a new profile or save an existing profile after updates 
-    public UserProfile saveProfile(User user, UserProfileRequest request){
-        UserProfile profile = userProfileRepository.findByUser(user)
-                .orElse(UserProfile.builder().user(user).build());
+    //create a new profile
+     public UserProfile createProfile(User user, UserProfileRequest request){
+        if(userProfileRepository.findByUser(user).isPresent()){
+                throw new RuntimeException("Profile already exists");
+        }
 
-        List<Interest> interests = interestRepository.findAllById(request.getInterestIds());
 
-        profile.setName(request.getName());
-        profile.setAge(request.getAge());
-        profile.setGender(request.getGender());
-        profile.setCity(request.getCity());
-        profile.setLanguages(request.getLanguages());
-        profile.setInterests(interests);
+        UserProfile profile = UserProfile.builder()
+                .user(user)
+                .name(request.getName())
+                .age(request.getAge())
+                .gender(request.getGender())
+                .city(request.getCity())
+                .languages(request.getLanguages())
+                .interests(request.getInterests())
+                .build();
 
         return userProfileRepository.save(profile);
-    }
+
+     }
+
+     public UserProfile updateProfile(User user, UserProfileRequest request){
+        UserProfile profile = userProfileRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        if (request.getName()!=null) profile.setName(request.getName());
+        if (request.getAge()!=null) profile.setAge(request.getAge());
+        if (request.getGender()!=null) profile.setGender(request.getGender());
+        if (request.getCity()!=null) profile.setCity(request.getCity());
+        if (request.getLanguages()!=null) profile.setLanguages(request.getLanguages());
+        if (request.getInterests()!=null) profile.setInterests(request.getInterests());
+
+        return userProfileRepository.save(profile);
+     }
+
      // Function to Find a match for a user who is logged in
     public UserProfileResponse getMatch(User user) {
         UserProfile currentProfile = userProfileRepository.findByUser(user)

@@ -25,7 +25,7 @@ public class UserProfile {
     private String name;
 
     @Column(nullable = false)
-    private int age;
+    private Integer age;
     
     @Column(nullable = false)
     private String gender;
@@ -33,12 +33,13 @@ public class UserProfile {
     @Column(nullable = false)
     private String city;
 
-    @ManyToMany
-    @JoinTable
+    @ElementCollection
+    @CollectionTable
     (   name="user_profile_interests",
-        joinColumns = @JoinColumn(name="profile_id"),
-        inverseJoinColumns = @JoinColumn(name="interest_id")
+        joinColumns = @JoinColumn(name="profile_id")
     )
+    @Enumerated(EnumType.STRING)
+    @Column(name="language")
     private List<Interest> interests;
 
 
@@ -48,8 +49,9 @@ public class UserProfile {
         name="user_profile_languages",
         joinColumns = @JoinColumn(name = "profile_id")
     )
+    @Enumerated(EnumType.STRING)
     @Column(name = "language")
-    private List<String> languages;
+    private List<Language> languages;
     
     
     
