@@ -1,4 +1,4 @@
-package com.matchme.backend.profile.dto;
+package com.matchme.backend.user.profile.dto;
 
 import java.util.*;
 import lombok.*;

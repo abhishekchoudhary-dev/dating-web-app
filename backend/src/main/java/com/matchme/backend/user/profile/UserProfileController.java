@@ -1,14 +1,15 @@
-package com.matchme.backend.profile;
+package com.matchme.backend.user.profile;
 
 
-import com.matchme.backend.profile.dto.UserProfileRequest;
-import com.matchme.backend.profile.dto.UserProfileResponse;
+import com.matchme.backend.user.profile.dto.UserProfileRequest;
+import com.matchme.backend.user.profile.dto.UserProfileResponse;
 import com.matchme.backend.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -21,7 +22,7 @@ public class UserProfileController {
     @PostMapping("/profile")
     public ResponseEntity<UserProfile> createProfile(
             @AuthenticationPrincipal User user,
-            @RequestBody UserProfileRequest request) {
+            @Valid @RequestBody UserProfileRequest request) {
         UserProfile profile = userProfileService.createProfile(user, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(profile);
     }
@@ -29,7 +30,7 @@ public class UserProfileController {
     @PatchMapping("/profile")
     public ResponseEntity<UserProfile> updateProfile(
             @AuthenticationPrincipal User user,
-            @RequestBody UserProfileRequest request) {
+            @Valid @RequestBody UserProfileRequest request) {
         UserProfile profile = userProfileService.updateProfile(user, request);
         return ResponseEntity.ok(profile);
     }

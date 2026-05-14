@@ -1,4 +1,4 @@
-package com.matchme.backend.profile;
+package com.matchme.backend.user.profile;
 
 public enum Interest {
     MUSIC,

@@ -1,4 +1,4 @@
-package com.matchme.backend.profile;
+package com.matchme.backend.user.profile;
 
 
 import com.matchme.backend.user.User;

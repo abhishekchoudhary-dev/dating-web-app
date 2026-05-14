@@ -1,12 +1,12 @@
-package com.matchme.backend.profile;
+package com.matchme.backend.user.profile;
 
 import com.matchme.backend.user.User;
 import com.matchme.backend.user.UserRepository;
 import lombok.*;
 import org.springframework.stereotype.*;
 import java.util.*;
-import com.matchme.backend.profile.dto.UserProfileRequest;
-import com.matchme.backend.profile.dto.UserProfileResponse;
+import com.matchme.backend.user.profile.dto.UserProfileRequest;
+import com.matchme.backend.user.profile.dto.UserProfileResponse;
 
 @RequiredArgsConstructor
 @Service
