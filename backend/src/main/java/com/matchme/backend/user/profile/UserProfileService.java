@@ -7,6 +7,7 @@ import org.springframework.stereotype.*;
 import java.util.*;
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -63,4 +64,14 @@ public class UserProfileService {
             .profileLink("/api/users/" + user.getId())
             .build();
         }
+        //for admin dashboard later
+        public List<UserProfileResponse> getAllUsers() {
+        return userProfileRepository.findAll().stream()
+            .map(profile -> UserProfileResponse.builder()
+                    .id(profile.getUser().getId())
+                    .name(profile.getName())
+                    .profileLink("/api/users/" + profile.getUser().getId())
+                    .build())
+            .collect(Collectors.toList());
+}
 }

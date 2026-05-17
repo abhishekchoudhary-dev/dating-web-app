@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -41,5 +42,13 @@ public class UserProfileController {
     public ResponseEntity<UserProfileResponse> getUserById(@PathVariable Long id) {
         UserProfileResponse profile = userProfileService.getUserById(id);
         return ResponseEntity.ok(profile);
+    }
+
+
+    //Endpoint for admin dashboard
+    @GetMapping("/users")
+    public ResponseEntity<List<UserProfileResponse>> getAllUsers() {
+        List<UserProfileResponse> users = userProfileService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }
