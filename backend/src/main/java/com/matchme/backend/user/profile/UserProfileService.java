@@ -51,13 +51,16 @@ public class UserProfileService {
 
     
     public UserProfileResponse getUserById(Long id) {
-        UserProfile profile = userProfileRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Profile not found"));
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserProfile profile = userProfileRepository.findByUser(user)
+            .orElseThrow(() -> new RuntimeException("Profile not found"));
 
         return UserProfileResponse.builder()
-                .id(profile.getId())
-                .name(profile.getName())
-                .profileLink("/api/users"+profile.getId())
-                .build();
+            .id(user.getId())
+            .name(profile.getName())
+            .profileLink("/api/users/" + user.getId())
+            .build();
         }
 }

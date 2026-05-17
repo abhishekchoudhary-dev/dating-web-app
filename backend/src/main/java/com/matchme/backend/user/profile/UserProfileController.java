@@ -19,7 +19,7 @@ public class UserProfileController {
     private final UserProfileService userProfileService;
 
     // Create profile endpoint mapping
-    @PostMapping("/profile")
+    @PostMapping("/users/{id}/profile")
     public ResponseEntity<UserProfile> createProfile(
             @AuthenticationPrincipal User user,
             @Valid @RequestBody UserProfileRequest request) {
@@ -27,7 +27,7 @@ public class UserProfileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(profile);
     }
 
-    @PatchMapping("/profile")
+    @PatchMapping("/users/{id}/profile")
     public ResponseEntity<UserProfile> updateProfile(
             @AuthenticationPrincipal User user,
             @Valid @RequestBody UserProfileRequest request) {
