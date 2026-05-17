@@ -1,10 +1,10 @@
-package com.matchme.backend.profile.dto;
+package com.matchme.backend.user.profile.dto;
 
 import lombok.Data;
 import java.util.List;
 import jakarta.validation.constraints.*;
-import com.matchme.backend.profile.Interest;
-import com.matchme.backend.profile.Language;
+import com.matchme.backend.user.profile.Interest;
+import com.matchme.backend.user.profile.Language;
 
 @Data
 public class UserProfileRequest {

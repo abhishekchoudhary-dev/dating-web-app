@@ -49,26 +49,15 @@ public class UserProfileService {
         return userProfileRepository.save(profile);
      }
 
-     // Function to Find a match for a user who is logged in
-    public UserProfileResponse getMatch(User user) {
-        UserProfile currentProfile = userProfileRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Complete your profile first"));
+    
+    public UserProfileResponse getUserById(Long id) {
+        UserProfile profile = userProfileRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Profile not found"));
 
-        List<UserProfile> matches = userProfileRepository
-                .findMatchByInterests(currentProfile.getInterests(), currentProfile.getId());
-
-        if (matches.isEmpty()) {
-            throw new RuntimeException("No matches found");
-        }
-
-        UserProfile match = matches.get(0);
         return UserProfileResponse.builder()
-                .name(match.getName())
-                .profileLink("/api/profile/" + match.getId())
+                .id(profile.getId())
+                .name(profile.getName())
+                .profileLink("/api/users"+profile.getId())
                 .build();
-    }
-    public UserProfile getProfileById(Long id) {
-    return userProfileRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Profile not found"));
-}
+        }
 }

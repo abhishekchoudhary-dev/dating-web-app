@@ -35,18 +35,11 @@ public class UserProfileController {
         return ResponseEntity.ok(profile);
     }
 
-    // Endpoint to get a matching person
-    @GetMapping("/users")
-    public ResponseEntity<UserProfileResponse> getMatch(
-            @AuthenticationPrincipal User user) {
-        UserProfileResponse match = userProfileService.getMatch(user);
-        return ResponseEntity.ok(match);
-    }
 
     // Endpoint for user to open their profile
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserProfile> getProfile(@PathVariable Long id) {
-        UserProfile profile = userProfileService.getProfileById(id);
+    public ResponseEntity<UserProfileResponse> getUserById(@PathVariable Long id) {
+        UserProfileResponse profile = userProfileService.getUserById(id);
         return ResponseEntity.ok(profile);
     }
 }
