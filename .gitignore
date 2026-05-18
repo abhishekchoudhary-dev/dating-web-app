@@ -17,8 +17,7 @@ backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### React Router (frontend) ###
-frontend/.react-router/
-frontend/build/
+### Next.js ###
+frontend/.next/
+frontend/out/
 frontend/node_modules/
-
