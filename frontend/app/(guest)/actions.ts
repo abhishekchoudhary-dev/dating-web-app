@@ -22,7 +22,7 @@ export async function register(initialState: any, form: FormData) {
 
     await setResponseCookies(response.headers.getSetCookie());
 
-    redirect('/dashboard');
+    redirect('/discover');
 }
 
 export async function login(initialState: any, form: FormData) {
@@ -41,7 +41,7 @@ export async function login(initialState: any, form: FormData) {
 
     await setResponseCookies(response.headers.getSetCookie());
 
-    redirect('/dashboard');
+    redirect('/discover');
 }
 
 export async function logout() {
