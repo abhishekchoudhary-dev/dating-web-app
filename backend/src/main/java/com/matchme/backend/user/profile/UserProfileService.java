@@ -7,71 +7,91 @@ import org.springframework.stereotype.*;
 import java.util.*;
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
+import com.matchme.backend.exception.ResourceNotFoundException;
+import com.matchme.backend.user.profile.dto.BioResponse;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserProfileService {
-    private final UserRepository userRepository;
-    private final UserProfileRepository userProfileRepository;
+        private final UserRepository userRepository;
+        private final UserProfileRepository userProfileRepository;
 
-    //create a new profile
-     public UserProfile createProfile(User user, UserProfileRequest request){
-        if(userProfileRepository.findByUser(user).isPresent()){
-                throw new RuntimeException("Profile already exists");
+        //create a new profile
+        public UserProfile createProfile(User user, UserProfileRequest request){
+                if(userProfileRepository.findByUser(user).isPresent()){
+                        throw new RuntimeException("Profile already exists");
         }
 
 
-        UserProfile profile = UserProfile.builder()
-                .user(user)
-                .name(request.getName())
-                .age(request.getAge())
-                .gender(request.getGender())
-                .city(request.getCity())
-                .languages(request.getLanguages())
-                .interests(request.getInterests())
-                .build();
+                UserProfile profile = UserProfile.builder()
+                        .user(user)
+                        .name(request.getName())
+                        .age(request.getAge())
+                        .gender(request.getGender())
+                        .city(request.getCity())
+                        .languages(request.getLanguages())
+                        .interests(request.getInterests())
+                        .build();
 
-        return userProfileRepository.save(profile);
+                return userProfileRepository.save(profile);
 
      }
 
-     public UserProfile updateProfile(User user, UserProfileRequest request){
-        UserProfile profile = userProfileRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+        public UserProfile updateProfile(User user, UserProfileRequest request){
+                UserProfile profile = userProfileRepository.findByUser(user)
+                        .orElseThrow(() -> new RuntimeException("Profile not found"));
 
-        if (request.getName()!=null) profile.setName(request.getName());
-        if (request.getAge()!=null) profile.setAge(request.getAge());
-        if (request.getGender()!=null) profile.setGender(request.getGender());
-        if (request.getCity()!=null) profile.setCity(request.getCity());
-        if (request.getLanguages()!=null) profile.setLanguages(request.getLanguages());
-        if (request.getInterests()!=null) profile.setInterests(request.getInterests());
+                if (request.getName()!=null) profile.setName(request.getName());
+                if (request.getAge()!=null) profile.setAge(request.getAge());
+                if (request.getGender()!=null) profile.setGender(request.getGender());
+                if (request.getCity()!=null) profile.setCity(request.getCity());
+                if (request.getLanguages()!=null) profile.setLanguages(request.getLanguages());
+                if (request.getInterests()!=null) profile.setInterests(request.getInterests());
 
-        return userProfileRepository.save(profile);
-     }
+                return userProfileRepository.save(profile);
+        }
 
     
-    public UserProfileResponse getUserById(Long id) {
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        public UserProfileResponse getUserById(Long id) {
+                User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        UserProfile profile = userProfileRepository.findByUser(user)
-            .orElseThrow(() -> new RuntimeException("Profile not found"));
+                UserProfile profile = userProfileRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
 
-        return UserProfileResponse.builder()
-            .id(user.getId())
-            .name(profile.getName())
-            .profileLink("/api/users/" + user.getId())
-            .build();
+                return UserProfileResponse.builder()
+                .id(user.getId())
+                .name(profile.getName())
+                .profileLink("/api/users/" + user.getId())
+                .build();
+        }
+        //for Bio endpoint
+        public BioResponse getBio(Long id){
+                User user = userRepository.findById(id)
+                        .orElseThrow(()->new ResourceNotFoundException("User not found"));
+
+                UserProfile profile = userProfileRepository.findByUser(user)
+                        .orElseThrow(()->new ResourceNotFoundException("Profile not found"));
+                
+                return BioResponse.builder()
+                        .id(user.getId())
+                        .age(profile.getAge())
+                        .gender(profile.getGender())
+                        .city(profile.getCity())
+                        .interests(profile.getInterests())
+                        .languages(profile.getLanguages())
+                        .build();
+
         }
         //for admin dashboard later
         public List<UserProfileResponse> getAllUsers() {
-        return userProfileRepository.findAll().stream()
-            .map(profile -> UserProfileResponse.builder()
-                    .id(profile.getUser().getId())
-                    .name(profile.getName())
-                    .profileLink("/api/users/" + profile.getUser().getId())
-                    .build())
-            .collect(Collectors.toList());
-}
+                return userProfileRepository.findAll().stream()
+                .map(profile -> UserProfileResponse.builder()
+                        .id(profile.getUser().getId())
+                        .name(profile.getName())
+                        .profileLink("/api/users/" + profile.getUser().getId())
+                        .build())
+                .collect(Collectors.toList());
+        }
 }

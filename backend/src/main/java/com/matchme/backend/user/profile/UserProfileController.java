@@ -3,6 +3,7 @@ package com.matchme.backend.user.profile;
 
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
+import com.matchme.backend.user.profile.dto.BioResponse;
 import com.matchme.backend.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,12 @@ public class UserProfileController {
         UserProfileResponse profile = userProfileService.getUserById(id);
         return ResponseEntity.ok(profile);
     }
-
+    //Endpoint for bio
+    @GetMapping("users/{id}/bio")
+    public ResponseEntity<BioResponse> getBio(@PathVariable Long id){
+        BioResponse bio = userProfileService.getBio(id);
+        return ResponseEntity.ok(bio);
+    }
 
     //Endpoint for admin dashboard
     @GetMapping("/users")
