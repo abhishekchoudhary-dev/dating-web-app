@@ -7,11 +7,10 @@ import { logout } from "@/app/(guest)/actions";
 import { CompassIcon, GearSixIcon, HeartIcon, SignOutIcon, UserIcon } from '@phosphor-icons/react/ssr';
 import Navbar from "@/app/components/Navbar";
 import { Menu, MenuItem } from "@/app/components/ui/Menu";
-
+import Dock from "@/app/components/Dock";
+import PageTitle from "@/app/components/ui/PageTitle";
 
 export default async function AuthenticatedLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-    const user = await getAuthenticatedUser();
-
     const navigation = (
         <Menu className="menu-horizontal gap-2">
             <MenuItem href="/matches" title="Matches" icon={<HeartIcon size={24} />} />
@@ -22,7 +21,6 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
 
     const menu = (
         <>
-            <span>{user.email}</span>
             <div className="dropdown dropdown-end ml-2">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                     <div className="w-10 rounded-full">
@@ -51,8 +49,20 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
             <Navbar center={navigation} end={menu} />
 
             <div className="mx-auto max-w-7xl p-4">
+
+                <div className="flex justify-between items-center">
+                    <PageTitle />
+
+                    {/* Only on mobile */}
+                    <div className="block lg:hidden">
+                        {menu}
+                    </div>
+                </div>
+
                 {children}
             </div>
+
+            <Dock />
         </>
     );
 }
