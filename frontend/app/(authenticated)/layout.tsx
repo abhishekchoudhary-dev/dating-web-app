@@ -1,7 +1,6 @@
 import React from "react";
 import Form from "next/form";
 
-import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
 import { logout } from "@/app/(guest)/actions";
 
 import { CompassIcon, GearSixIcon, HeartIcon, SignOutIcon, UserIcon } from '@phosphor-icons/react/ssr';
@@ -9,6 +8,7 @@ import Navbar from "@/app/components/Navbar";
 import { Menu, MenuItem } from "@/app/components/ui/Menu";
 import Dock from "@/app/components/Dock";
 import PageTitle from "@/app/components/ui/PageTitle";
+import Avatar from "@/app/components/ui/Avatar";
 
 export default async function AuthenticatedLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const navigation = (
@@ -22,13 +22,10 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
     const menu = (
         <>
             <div className="dropdown dropdown-end ml-2">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                    <div className="w-10 rounded-full">
-                        <img
-                            alt="Tailwind CSS Navbar component"
-                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
-                    </div>
-                </div>
+
+                <button tabIndex={0} className="btn btn-ghost btn-circle">
+                    <Avatar className="w-10 rounded-full" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                </button>
 
                 <Menu className="dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 gap-2 shadow">
                     <MenuItem href="/settings" title="Settings" icon={<GearSixIcon size={24} />} />
@@ -49,7 +46,6 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
             <Navbar center={navigation} end={menu} />
 
             <div className="mx-auto max-w-7xl p-4">
-
                 <div className="flex justify-between items-center">
                     <PageTitle />
 
