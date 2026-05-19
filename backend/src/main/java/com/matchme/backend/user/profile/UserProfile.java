@@ -32,12 +32,22 @@ public class UserProfile {
 
     @Column(nullable = false)
     private Integer age;
-    
+
+    //set age range for recommendations
+    private Integer minAgePreference;
+    private Integer maxAgePreference;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String gender;
+    private Gender gender;
 
     @Column(nullable = false)
     private String city;
+
+    //holds the preferred gender a user is trying to match with
+    @Enumerated(EnumType.STRING)
+    @Column(name="gender_preference")
+    private GenderPreference genderPreference;
 
     @ElementCollection
     @CollectionTable
