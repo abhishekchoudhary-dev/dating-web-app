@@ -47,6 +47,13 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, details, request);
     }
 
+    //**404 error if user or profile not found */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException ex,
+                                                        HttpServletRequest request) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+    }
+
     /** Last-resort safety net. Never leak stack traces to clients. */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleEverythingElse(Exception ex,
