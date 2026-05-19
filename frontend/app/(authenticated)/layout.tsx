@@ -1,35 +1,24 @@
 import React from "react";
 import Form from "next/form";
+
 import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
 import { logout } from "@/app/(guest)/actions";
 
-
 import { CompassIcon, GearSixIcon, HeartIcon, SignOutIcon, UserIcon } from '@phosphor-icons/react/ssr';
 import Navbar from "@/app/components/Navbar";
-import NavLinks from "@/app/components/NavLinks";
+import { Menu, MenuItem } from "@/app/components/ui/Menu";
 
-const navLinks = [
-    {
-        href: '/matches',
-        title: 'Matches',
-        icon: <HeartIcon size={24} />
-    },
-    {
-        href: '/discover',
-        title: 'Discover',
-        icon: <CompassIcon size={24} />
-    },
-    {
-        href: '/profile',
-        title: 'Profile',
-        icon: <UserIcon size={24} />
-    }
-]
 
 export default async function AuthenticatedLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const user = await getAuthenticatedUser();
 
-    const navigation = (<NavLinks links={navLinks} />);
+    const navigation = (
+        <Menu className="menu-horizontal gap-2">
+            <MenuItem href="/matches" title="Matches" icon={<HeartIcon size={24} />} />
+            <MenuItem href="/discover" title="Discover" icon={<CompassIcon size={24} />} />
+            <MenuItem href="/profile" title="Profile" icon={<UserIcon size={24} />} />
+        </Menu>
+    );
 
     const menu = (
         <>
@@ -42,12 +31,9 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
                             src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
                     </div>
                 </div>
-                <ul
-                    tabIndex={-1}
-                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                    <li>
-                        <a><GearSixIcon size={24} /> Settings</a>
-                    </li>
+
+                <Menu className="dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                    <MenuItem href="/settings" title="Settings" icon={<GearSixIcon size={24} />} />
                     <Form action={logout}>
                         <li>
                             <button type="submit">
@@ -55,7 +41,7 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
                             </button>
                         </li>
                     </Form>
-                </ul>
+                </Menu>
             </div>
         </>
     );
