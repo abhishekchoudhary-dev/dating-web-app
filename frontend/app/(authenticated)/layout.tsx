@@ -24,7 +24,7 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
             <div className="dropdown dropdown-end ml-2">
 
                 <button tabIndex={0} className="btn btn-ghost btn-circle">
-                    <Avatar className="w-10 rounded-full" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                    <Avatar className="w-10" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                 </button>
 
                 <Menu className="dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 gap-2 shadow">
@@ -46,7 +46,7 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
             <Navbar center={navigation} end={menu} />
 
             <div className="mx-auto max-w-7xl p-4">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-6">
                     <PageTitle />
 
                     {/* Only on mobile */}
