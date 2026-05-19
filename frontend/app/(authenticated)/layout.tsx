@@ -32,7 +32,7 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
                     </div>
                 </div>
 
-                <Menu className="dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                <Menu className="dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 gap-2 shadow">
                     <MenuItem href="/settings" title="Settings" icon={<GearSixIcon size={24} />} />
                     <Form action={logout}>
                         <li>
