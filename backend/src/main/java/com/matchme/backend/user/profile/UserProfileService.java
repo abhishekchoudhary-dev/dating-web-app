@@ -27,6 +27,7 @@ public class UserProfileService {
                 UserProfile profile = UserProfile.builder()
                         .user(user)
                         .name(request.getName())
+                        .profilePictureUrl(request.getProfilePictureUrl())
                         .age(request.getAge())
                         .gender(request.getGender())
                         .city(request.getCity())
@@ -43,6 +44,7 @@ public class UserProfileService {
                         .orElseThrow(() -> new RuntimeException("Profile not found"));
 
                 if (request.getName()!=null) profile.setName(request.getName());
+                if (request.getProfilePictureUrl()!=null) profile.setProfilePictureUrl(request.getProfilePictureUrl());
                 if (request.getAge()!=null) profile.setAge(request.getAge());
                 if (request.getGender()!=null) profile.setGender(request.getGender());
                 if (request.getCity()!=null) profile.setCity(request.getCity());
@@ -64,6 +66,9 @@ public class UserProfileService {
                 .id(user.getId())
                 .name(profile.getName())
                 .profileLink("/api/users/" + user.getId())
+                .profilePictureUrl(profile.getProfilePictureUrl()!=null
+                        ?profile.getProfilePictureUrl(): 
+                        "https://ui-avatars.com/api/?name=" + profile.getName())
                 .build();
         }
         //for Bio endpoint

@@ -27,6 +27,9 @@ public class UserProfile {
     @Column(nullable = false)
     private String name;
 
+    @Column(name="profile_picture_url")
+    private String profilePictureUrl;
+
     @Column(nullable = false)
     private Integer age;
     
