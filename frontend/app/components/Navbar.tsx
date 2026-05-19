@@ -1,14 +1,14 @@
 import React from "react";
 import Link from "next/link";
 
-type NavbarProps = {
+type NavbarComponentProps = {
     center?: React.ReactNode,
     end?: React.ReactNode
 }
 
-export default function Navbar({center, end}: NavbarProps) {
+export default function Navbar({center, end}: NavbarComponentProps) {
     return (
-        <div className="shadow-sm">
+        <div className="hidden lg:block shadow-sm">
             <div className="navbar bg-base-100 mx-auto max-w-7xl">
                 <div className="navbar-start">
                     <Link href="/" className="btn btn-ghost text-xl">Match Me</Link>
