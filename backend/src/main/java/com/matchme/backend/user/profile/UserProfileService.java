@@ -63,13 +63,13 @@ public class UserProfileService {
                 .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
 
                 return UserProfileResponse.builder()
-                .id(user.getId())
-                .name(profile.getName())
-                .profileLink("/api/users/" + user.getId())
-                .profilePictureUrl(profile.getProfilePictureUrl()!=null
-                        ?profile.getProfilePictureUrl(): 
-                        "https://ui-avatars.com/api/?name=" + profile.getName())
-                .build();
+                        .id(user.getId())
+                        .name(profile.getName())
+                        .profileLink("/api/users/" + user.getId())
+                        .profilePictureUrl(profile.getProfilePictureUrl()!=null
+                                ?profile.getProfilePictureUrl(): 
+                                "https://ui-avatars.com/api/?name=" + profile.getName())
+                        .build();
         }
         //for Bio endpoint
         public BioResponse getBio(Long id){

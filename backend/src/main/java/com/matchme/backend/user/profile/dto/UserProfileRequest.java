@@ -5,6 +5,8 @@ import java.util.List;
 import jakarta.validation.constraints.*;
 import com.matchme.backend.user.profile.Interest;
 import com.matchme.backend.user.profile.Language;
+import com.matchme.backend.user.profile.Gender;
+import com.matchme.backend.user.profile.GenderPreference;
 
 @Data
 public class UserProfileRequest {
@@ -20,8 +22,11 @@ public class UserProfileRequest {
     @Max(value=100, message="Age must be realistic")
     private Integer age;
 
-    @NotBlank(message = "Gender is rqeuired")
-    private String gender;
+    @NotNull
+    private Gender gender;
+
+    @NotNull
+    private GenderPreference genderPreference;
 
     @NotBlank(message = "City is required")
     private String city;
