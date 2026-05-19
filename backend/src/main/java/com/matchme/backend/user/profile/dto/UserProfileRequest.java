@@ -11,17 +11,25 @@ public class UserProfileRequest {
     @NotBlank(message = "Name is required")
     @Size(min=1,max=50, message = "Name must be between 2 and 50 characters")
     private String name;
+
+    //URL of the user profile picture on the server will be receive here 
+    private String profilePictureUrl;
+
     @NotNull(message = "Age is required")
     @Min(value = 18,message="You must be at least 18 years old")
     @Max(value=100, message="Age must be realistic")
     private Integer age;
+
     @NotBlank(message = "Gender is rqeuired")
     private String gender;
+
     @NotBlank(message = "City is required")
     private String city;
+
     @NotNull(message = "At least 1 language is required")
     @Size(min=1,max=3,message = "You can select between 1 and 3 langugages")
     private List<Language> languages;
+
     @NotNull(message = "At least 1 interest is required")
     @Size(min=1,max=5, message="You can select between 1 and 5 interests")
     private List<Interest> interests;
