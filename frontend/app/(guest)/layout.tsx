@@ -1,24 +1,20 @@
 import React from "react";
-import Link from "next/link";
+import Navbar from "@/app/components/Navbar";
+import { Menu, MenuItem } from "@/app/components/ui/Menu";
 
 export default function GuestLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <>
-            <div className="navbar bg-base-100 shadow-sm">
-                <div className="flex-1">
-                    <Link href="/" className="btn btn-ghost text-xl">Match Me</Link>
-                </div>
-                <div className="flex-none">
-                    <ul className="menu menu-horizontal px-1">
-                        <li><Link href="/login">Log in</Link></li>
-                        <li><Link href="/register">Register</Link></li>
-                    </ul>
-                </div>
-            </div>
+            <Navbar end={
+                <Menu className="menu-horizontal gap-2">
+                    <MenuItem href="/login" title="Log in" />
+                    <MenuItem href="/register" title="Register" />
+                </Menu>
+            } />
+
             <div className="flex items-center justify-center h-screen">
                 {children}
             </div>
-
         </>
     );
 }

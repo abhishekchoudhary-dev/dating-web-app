@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import React from "react";
 
 export const metadata: Metadata = {
-    title: "Match Me - Discover",
-};
+    title: 'Discover',
+}
 
-export default function Dashboard() {
+export default function Discover() {
     return (
         <>
-            <h1>This is discover page</h1>
+            <p>Discover content</p>
         </>
     );
 }

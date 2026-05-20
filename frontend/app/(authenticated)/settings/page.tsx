@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-    title: 'Profile',
+    title: 'Settings',
 }
 
-export default function Profile() {
+export default function Settings() {
     return (
         <>
-            <p>Profile content</p>
+            <p>Settings content</p>
         </>
     );
 }
