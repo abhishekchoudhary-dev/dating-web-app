@@ -5,8 +5,11 @@ import com.matchme.backend.user.UserRepository;
 import lombok.*;
 import org.springframework.stereotype.*;
 import java.util.*;
+import java.io.*;
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
+import com.matchme.backend.user.profile.picture.FileStorageService;
+import org.springframework.web.multipart.MultipartFile;
 import com.matchme.backend.exception.ResourceNotFoundException;
 import com.matchme.backend.user.profile.dto.BioResponse;
 import java.util.stream.Collectors;
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 public class UserProfileService {
         private final UserRepository userRepository;
         private final UserProfileRepository userProfileRepository;
+        //dependency to store pictures
+        private final FileStorageService fileStorageService; 
 
         //create a new profile
         public UserProfile createProfile(User user, UserProfileRequest request){
@@ -27,7 +32,6 @@ public class UserProfileService {
                 UserProfile profile = UserProfile.builder()
                         .user(user)
                         .name(request.getName())
-                        .profilePictureUrl(request.getProfilePictureUrl())
                         .age(request.getAge())
                         .gender(request.getGender())
                         .city(request.getCity())
@@ -37,14 +41,13 @@ public class UserProfileService {
 
                 return userProfileRepository.save(profile);
 
-     }
+        }
 
         public UserProfile updateProfile(User user, UserProfileRequest request){
                 UserProfile profile = userProfileRepository.findByUser(user)
                         .orElseThrow(() -> new RuntimeException("Profile not found"));
 
                 if (request.getName()!=null) profile.setName(request.getName());
-                if (request.getProfilePictureUrl()!=null) profile.setProfilePictureUrl(request.getProfilePictureUrl());
                 if (request.getAge()!=null) profile.setAge(request.getAge());
                 if (request.getGender()!=null) profile.setGender(request.getGender());
                 if (request.getCity()!=null) profile.setCity(request.getCity());
@@ -66,11 +69,12 @@ public class UserProfileService {
                         .id(user.getId())
                         .name(profile.getName())
                         .profileLink("/api/users/" + user.getId())
-                        .profilePictureUrl(profile.getProfilePictureUrl()!=null
-                                ?profile.getProfilePictureUrl(): 
-                                "https://ui-avatars.com/api/?name=" + profile.getName())
+                        .profilePictureUrl(profile.getProfilePictureUrl() != null
+                                ? profile.getProfilePictureUrl()
+                                : "/images/placeholder.jpg")
                         .build();
         }
+
         //for Bio endpoint
         public BioResponse getBio(Long id){
                 User user = userRepository.findById(id)
@@ -89,6 +93,28 @@ public class UserProfileService {
                         .build();
 
         }
+
+        //service function to upload the profile picture and save in upload folder
+        public String uploadProfilePicture(User user, Long id, MultipartFile file) {
+                if (!user.getId().equals(id)) {
+                        throw new RuntimeException("You can only update your own profile picture");
+                }
+
+                UserProfile profile = userProfileRepository.findByUser(user)
+                        .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+
+                try {
+                        String userPictureUrl = fileStorageService.saveFile(file, user.getId());
+                        profile.setProfilePictureUrl(userPictureUrl);
+                        userProfileRepository.save(profile);
+                        return userPictureUrl;
+
+                } catch (IOException e) {
+                        //server side error
+                        throw new RuntimeException("Failed to upload file");
+                }
+        }
+
         //for admin dashboard later
         public List<UserProfileResponse> getAllUsers() {
                 return userProfileRepository.findAll().stream()

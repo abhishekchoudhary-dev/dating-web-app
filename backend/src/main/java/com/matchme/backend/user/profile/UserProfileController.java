@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.*;
 import java.util.*;
@@ -29,6 +30,7 @@ public class UserProfileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(profile);
     }
 
+    //update profile endpoint
     @PatchMapping("/users/{id}/profile")
     public ResponseEntity<UserProfile> updateProfile(
             @AuthenticationPrincipal User user,
@@ -49,6 +51,16 @@ public class UserProfileController {
     public ResponseEntity<BioResponse> getBio(@PathVariable Long id){
         BioResponse bio = userProfileService.getBio(id);
         return ResponseEntity.ok(bio);
+    }
+
+    //endpoint for frontend to use for uploading profile picture in uplaods folder
+    @PostMapping("/users/{id}/profile/picture")
+    public ResponseEntity<String> uploadProfilePicture(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @RequestParam("file") MultipartFile file) {
+        String userPictureUrl = userProfileService.uploadProfilePicture(user, id, file);
+        return ResponseEntity.ok(userPictureUrl);
     }
 
     //Endpoint for admin dashboard

@@ -14,8 +14,6 @@ public class UserProfileRequest {
     @Size(min=1,max=50, message = "Name must be between 2 and 50 characters")
     private String name;
 
-    //URL of the user profile picture on the server will be receive here 
-    private String profilePictureUrl;
 
     @NotNull(message = "Age is required")
     @Min(value = 18,message="You must be at least 18 years old")
