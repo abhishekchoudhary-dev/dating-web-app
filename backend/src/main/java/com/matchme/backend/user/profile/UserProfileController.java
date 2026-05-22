@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.*;
 import java.util.*;
@@ -21,18 +22,19 @@ public class UserProfileController {
     private final UserProfileService userProfileService;
 
     // Create profile endpoint mapping
-    @PostMapping("/users/{id}/profile")
+    @PostMapping(value = "/users/{id}/profile", consumes = "multipart/form-data")
     public ResponseEntity<UserProfile> createProfile(
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody UserProfileRequest request) {
+            @Valid @ModelAttribute UserProfileRequest request) {
         UserProfile profile = userProfileService.createProfile(user, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(profile);
     }
 
-    @PatchMapping("/users/{id}/profile")
+    //update profile endpoint
+    @PatchMapping(value = "/users/{id}/profile", consumes = "multipart/form-data")
     public ResponseEntity<UserProfile> updateProfile(
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody UserProfileRequest request) {
+            @ModelAttribute UserProfileRequest request) {
         UserProfile profile = userProfileService.updateProfile(user, request);
         return ResponseEntity.ok(profile);
     }

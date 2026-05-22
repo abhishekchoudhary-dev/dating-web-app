@@ -18,7 +18,7 @@ public class UserProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
     @JsonIgnore
     @OneToOne
     @JoinColumn(name="user_id", nullable=false, unique = true)
@@ -55,7 +55,7 @@ public class UserProfile {
         joinColumns = @JoinColumn(name="profile_id")
     )
     @Enumerated(EnumType.STRING)
-    @Column(name="language")
+    @Column(name="interest")
     private List<Interest> interests;
 
 
@@ -68,7 +68,5 @@ public class UserProfile {
     @Enumerated(EnumType.STRING)
     @Column(name = "language")
     private List<Language> languages;
-    
-    
-    
+
 }
