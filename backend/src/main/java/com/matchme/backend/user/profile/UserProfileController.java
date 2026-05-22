@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.*;
+import java.util.stream.Collectors;
 import java.util.*;
 
 @RestController
@@ -51,6 +52,19 @@ public class UserProfileController {
     public ResponseEntity<BioResponse> getBio(@PathVariable Long id){
         BioResponse bio = userProfileService.getBio(id);
         return ResponseEntity.ok(bio);
+    }
+
+    //endpoint for frontend to fetch interests when user makes profile
+    @GetMapping("/interests")
+    public ResponseEntity<List<Map<String, String>>> getInterests() {
+        List<Map<String, String>> interests = Arrays.stream(Interest.values())
+                .map(i -> Map.of(
+                        "name", i.name(),
+                        "displayName", i.getDisplayName(),
+                        "emoji", i.getEmoji()
+                ))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(interests);
     }
 
     //Endpoint for admin dashboard
