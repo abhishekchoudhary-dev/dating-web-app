@@ -25,7 +25,16 @@ public class FileStorageService{
 
         //Make a unique name for the current user picture to avoid overwriting
         String extension = getExtension(file.getOriginalFilename());
-        String filename = UUID.randomUUID() + "." + extension;
+        String filename = "profile_" + userId + "." + extension;
+
+        //first we wiil delete the existing picture
+        try (var stream = Files.list(userFolder)) {
+            stream.filter(p -> p.getFileName().toString().startsWith("profile_" + userId + "."))
+                  .forEach(p -> {
+                      try { Files.deleteIfExists(p); }
+                    catch (IOException ignored) {}
+                  });
+        }
 
         //save the picture
         Path filePath = userFolder.resolve(filename);

@@ -22,19 +22,19 @@ public class UserProfileController {
     private final UserProfileService userProfileService;
 
     // Create profile endpoint mapping
-    @PostMapping("/users/{id}/profile")
+    @PostMapping(value = "/users/{id}/profile", consumes = "multipart/form-data")
     public ResponseEntity<UserProfile> createProfile(
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody UserProfileRequest request) {
+            @Valid @ModelAttribute UserProfileRequest request) {
         UserProfile profile = userProfileService.createProfile(user, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(profile);
     }
 
     //update profile endpoint
-    @PatchMapping("/users/{id}/profile")
+    @PatchMapping(value = "/users/{id}/profile", consumes = "multipart/form-data")
     public ResponseEntity<UserProfile> updateProfile(
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody UserProfileRequest request) {
+            @ModelAttribute UserProfileRequest request) {
         UserProfile profile = userProfileService.updateProfile(user, request);
         return ResponseEntity.ok(profile);
     }
@@ -51,16 +51,6 @@ public class UserProfileController {
     public ResponseEntity<BioResponse> getBio(@PathVariable Long id){
         BioResponse bio = userProfileService.getBio(id);
         return ResponseEntity.ok(bio);
-    }
-
-    //endpoint for frontend to use for uploading profile picture in uplaods folder
-    @PostMapping("/users/{id}/profile/picture")
-    public ResponseEntity<String> uploadProfilePicture(
-        @AuthenticationPrincipal User user,
-        @PathVariable Long id,
-        @RequestParam("file") MultipartFile file) {
-        String userPictureUrl = userProfileService.uploadProfilePicture(user, id, file);
-        return ResponseEntity.ok(userPictureUrl);
     }
 
     //Endpoint for admin dashboard

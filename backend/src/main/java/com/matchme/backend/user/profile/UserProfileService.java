@@ -26,7 +26,18 @@ public class UserProfileService {
         public UserProfile createProfile(User user, UserProfileRequest request){
                 if(userProfileRepository.findByUser(user).isPresent()){
                         throw new RuntimeException("Profile already exists");
-        }
+                }
+                //get profile picture that came with 'request' and save it in uploads folder
+                String pictureUrl = null;
+                if (request.getProfilePicture() != null && !request.getProfilePicture().isEmpty()) {
+                        try {
+                        pictureUrl = fileStorageService.saveFile(request.getProfilePicture(), user.getId());
+                        } catch (IOException e) {
+                        throw new RuntimeException("Failed to upload profile picture");
+                        } 
+                } else  {
+                        pictureUrl = "/images/placeholder.jpg";
+                }
 
 
                 UserProfile profile = UserProfile.builder()
@@ -37,6 +48,16 @@ public class UserProfileService {
                         .city(request.getCity())
                         .languages(request.getLanguages())
                         .interests(request.getInterests())
+                        .genderPreference(request.getGenderPreference()!=null 
+                                ? request.getGenderPreference()
+                                : GenderPreference.ANY)
+                        .minAgePreference(request.getMinAgePreference()!=null
+                                ? request.getMinAgePreference()
+                                : 18)
+                        .maxAgePreference(request.getMaxAgePreference()!=null
+                                ? request.getMaxAgePreference()
+                                : 100)
+                        .profilePictureUrl(pictureUrl)
                         .build();
 
                 return userProfileRepository.save(profile);
@@ -53,7 +74,19 @@ public class UserProfileService {
                 if (request.getCity()!=null) profile.setCity(request.getCity());
                 if (request.getLanguages()!=null) profile.setLanguages(request.getLanguages());
                 if (request.getInterests()!=null) profile.setInterests(request.getInterests());
+                if (request.getGenderPreference() != null) profile.setGenderPreference(request.getGenderPreference());
+                if (request.getMinAgePreference() != null) profile.setMinAgePreference(request.getMinAgePreference());
+                if (request.getMaxAgePreference() != null) profile.setMaxAgePreference(request.getMaxAgePreference());
 
+                //handle profile picture update
+                if (request.getProfilePicture() != null && !request.getProfilePicture().isEmpty()) {
+                        try {
+                        String pictureUrl = fileStorageService.saveFile(request.getProfilePicture(), user.getId());
+                        profile.setProfilePictureUrl(pictureUrl);
+                        } catch (IOException e) {
+                        throw new RuntimeException("Failed to upload profile picture");
+                        }
+                }
                 return userProfileRepository.save(profile);
         }
 
@@ -69,9 +102,7 @@ public class UserProfileService {
                         .id(user.getId())
                         .name(profile.getName())
                         .profileLink("/api/users/" + user.getId())
-                        .profilePictureUrl(profile.getProfilePictureUrl() != null
-                                ? profile.getProfilePictureUrl()
-                                : "/images/placeholder.jpg")
+                        .profilePictureUrl(profile.getProfilePictureUrl())
                         .build();
         }
 
@@ -92,27 +123,6 @@ public class UserProfileService {
                         .languages(profile.getLanguages())
                         .build();
 
-        }
-
-        //service function to upload the profile picture and save in upload folder
-        public String uploadProfilePicture(User user, Long id, MultipartFile file) {
-                if (!user.getId().equals(id)) {
-                        throw new RuntimeException("You can only update your own profile picture");
-                }
-
-                UserProfile profile = userProfileRepository.findByUser(user)
-                        .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
-
-                try {
-                        String userPictureUrl = fileStorageService.saveFile(file, user.getId());
-                        profile.setProfilePictureUrl(userPictureUrl);
-                        userProfileRepository.save(profile);
-                        return userPictureUrl;
-
-                } catch (IOException e) {
-                        //server side error
-                        throw new RuntimeException("Failed to upload file");
-                }
         }
 
         //for admin dashboard later

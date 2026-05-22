@@ -21,3 +21,7 @@ backend/.mvn/wrapper/maven-wrapper.jar
 frontend/.next/
 frontend/out/
 frontend/node_modules/
+
+### Profile picture uploads ###
+backend/uploads/*
+!backend/uploads/.gitkeep

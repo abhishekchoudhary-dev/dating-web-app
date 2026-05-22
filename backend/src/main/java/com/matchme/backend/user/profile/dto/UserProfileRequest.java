@@ -7,6 +7,7 @@ import com.matchme.backend.user.profile.Interest;
 import com.matchme.backend.user.profile.Language;
 import com.matchme.backend.user.profile.Gender;
 import com.matchme.backend.user.profile.GenderPreference;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class UserProfileRequest {
@@ -14,16 +15,20 @@ public class UserProfileRequest {
     @Size(min=1,max=50, message = "Name must be between 2 and 50 characters")
     private String name;
 
+    //holds the profile picture
+    private MultipartFile profilePicture;
 
     @NotNull(message = "Age is required")
     @Min(value = 18,message="You must be at least 18 years old")
     @Max(value=100, message="Age must be realistic")
     private Integer age;
 
+    private Integer minAgePreference;
+    private Integer maxAgePreference;
+
     @NotNull
     private Gender gender;
 
-    @NotNull
     private GenderPreference genderPreference;
 
     @NotBlank(message = "City is required")
