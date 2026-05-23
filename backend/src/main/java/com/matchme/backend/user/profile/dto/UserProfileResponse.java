@@ -1,14 +1,12 @@
 package com.matchme.backend.user.profile.dto;
 
-import java.util.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
-public class UserProfileResponse{
+public class UserProfileResponse {
     private Long id;
     private String name;
-    private String profileLink;
-    private String profilePictureUrl;
-
+    private String aboutMe;
 }

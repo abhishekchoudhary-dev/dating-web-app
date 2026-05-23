@@ -2,7 +2,7 @@ package com.matchme.backend.user.recommendation.scoring;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
-import com.matchme.backend.user.profile.UserProfile;
+import com.matchme.backend.user.profile.UserBio;
 
 @Component
 @RequiredArgsConstructor
@@ -11,7 +11,7 @@ public class ScoreCalculator{
     private final LanguageScoreCalculator languageScoreCalculator;
     private final CityScoreCalculator cityScoreCalculator;
 
-    public int calculate(UserProfile currentUser, UserProfile candidate){
+    public int calculate(UserBio currentUser, UserBio candidate){
         int score = 0;
 
         score += interestScoreCalculator.calculate

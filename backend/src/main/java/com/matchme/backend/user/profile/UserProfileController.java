@@ -3,6 +3,7 @@ package com.matchme.backend.user.profile;
 
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
+import com.matchme.backend.user.profile.dto.UserResponse;
 import com.matchme.backend.user.profile.dto.BioResponse;
 import com.matchme.backend.user.User;
 import lombok.RequiredArgsConstructor;
@@ -41,17 +42,25 @@ public class UserProfileController {
     }
 
 
-    // Endpoint for user to open their profile
+    // Endpoint for user with id
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserProfileResponse> getUserById(@PathVariable Long id) {
-        UserProfileResponse profile = userProfileService.getUserById(id);
-        return ResponseEntity.ok(profile);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        UserResponse currentUser = userProfileService.getUserById(id);
+        return ResponseEntity.ok(currentUser);
     }
+
+    //Endpoint to see user profile
+    @GetMapping("/users/{id}/profile")
+    public ResponseEntity<UserProfileResponse> getProfileById(@PathVariable Long id) {
+        UserProfileResponse currentUserProfile = userProfileService.getProfileById(id);
+        return ResponseEntity.ok(currentUserProfile);
+    }
+
     //Endpoint for bio
     @GetMapping("users/{id}/bio")
     public ResponseEntity<BioResponse> getBio(@PathVariable Long id){
-        BioResponse bio = userProfileService.getBio(id);
-        return ResponseEntity.ok(bio);
+        BioResponse currentUserBio = userProfileService.getBio(id);
+        return ResponseEntity.ok(currentUserBio);
     }
 
     //endpoint for frontend to fetch interests when user makes profile
@@ -82,8 +91,8 @@ public class UserProfileController {
 
     //Endpoint for admin dashboard
     @GetMapping("/users")
-    public ResponseEntity<List<UserProfileResponse>> getAllUsers() {
-        List<UserProfileResponse> users = userProfileService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userProfileService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 }
