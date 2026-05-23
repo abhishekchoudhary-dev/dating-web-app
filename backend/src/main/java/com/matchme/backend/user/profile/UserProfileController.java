@@ -67,6 +67,19 @@ public class UserProfileController {
         return ResponseEntity.ok(interests);
     }
 
+    //endpoint for frontend to fetch languages when user makes profile
+    @GetMapping("/languages")
+    public ResponseEntity<List<Map<String, String>>> getLanguages() {
+        List<Map<String, String>> languages = Arrays.stream(Language.values())
+            .map(l -> Map.of(
+                    "name", l.name(),
+                    "displayName", l.getDisplayName(),
+                    "emoji", l.getEmoji()
+            ))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(languages);
+    }
+
     //Endpoint for admin dashboard
     @GetMapping("/users")
     public ResponseEntity<List<UserProfileResponse>> getAllUsers() {
