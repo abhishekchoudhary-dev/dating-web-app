@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class BioResponse{
+public class UserBioResponse{
     private Long id;
     private Integer age;
     private Gender gender;

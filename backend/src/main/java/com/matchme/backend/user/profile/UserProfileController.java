@@ -4,7 +4,7 @@ package com.matchme.backend.user.profile;
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
 import com.matchme.backend.user.profile.dto.UserResponse;
-import com.matchme.backend.user.profile.dto.BioResponse;
+import com.matchme.backend.user.profile.dto.UserBioResponse;
 import com.matchme.backend.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,8 +58,8 @@ public class UserProfileController {
 
     //Endpoint for bio
     @GetMapping("users/{id}/bio")
-    public ResponseEntity<BioResponse> getBio(@PathVariable Long id){
-        BioResponse currentUserBio = userProfileService.getBio(id);
+    public ResponseEntity<UserBioResponse> getBio(@PathVariable Long id){
+        UserBioResponse currentUserBio = userProfileService.getBio(id);
         return ResponseEntity.ok(currentUserBio);
     }
 

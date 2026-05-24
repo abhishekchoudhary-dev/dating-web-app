@@ -10,7 +10,7 @@ import java.io.*;
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserResponse;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
-import com.matchme.backend.user.profile.dto.BioResponse;
+import com.matchme.backend.user.profile.dto.UserBioResponse;
 import com.matchme.backend.user.profile.picture.FileStorageService;
 import org.springframework.web.multipart.MultipartFile;
 import com.matchme.backend.exception.ResourceNotFoundException;
@@ -151,14 +151,14 @@ public class UserProfileService {
         }
 
         //for Bio endpoint
-        public BioResponse getBio(Long id){
+        public UserBioResponse getBio(Long id){
                 User user = userRepository.findById(id)
                         .orElseThrow(()->new ResourceNotFoundException("User not found"));
 
                 UserBio bio = userBioRepository.findByUser(user)
                 .orElseThrow(() -> new ResourceNotFoundException("Bio not found"));
                 
-                return BioResponse.builder()
+                return UserBioResponse.builder()
                         .id(user.getId())
                         .age(bio.getAge())
                         .gender(bio.getGender())
