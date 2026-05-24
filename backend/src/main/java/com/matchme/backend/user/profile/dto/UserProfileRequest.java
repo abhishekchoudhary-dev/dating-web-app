@@ -15,6 +15,10 @@ public class UserProfileRequest {
     @Size(min=1,max=50, message = "Name must be between 2 and 50 characters")
     private String name;
 
+
+    @Size(max=300, message="About Me section cannot exceed 300 characters")
+    private String aboutMe;
+
     //holds the profile picture
     private MultipartFile profilePicture;
 

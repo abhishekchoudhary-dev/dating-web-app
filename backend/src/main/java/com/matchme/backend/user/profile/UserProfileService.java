@@ -1,5 +1,6 @@
 package com.matchme.backend.user.profile;
 
+import com.matchme.backend.BackendApplication;
 import com.matchme.backend.user.User;
 import com.matchme.backend.user.UserRepository;
 import lombok.*;
@@ -7,22 +8,28 @@ import org.springframework.stereotype.*;
 import java.util.*;
 import java.io.*;
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
+import com.matchme.backend.user.profile.dto.UserResponse;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
+import com.matchme.backend.user.profile.dto.UserBioResponse;
 import com.matchme.backend.user.profile.picture.FileStorageService;
 import org.springframework.web.multipart.MultipartFile;
 import com.matchme.backend.exception.ResourceNotFoundException;
-import com.matchme.backend.user.profile.dto.BioResponse;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserProfileService {
+        
         private final UserRepository userRepository;
         private final UserProfileRepository userProfileRepository;
+        private final UserBioRepository userBioRepository;
         //dependency to store pictures
-        private final FileStorageService fileStorageService; 
+        private final FileStorageService fileStorageService;
+
 
         //create a new profile
+        @Transactional
         public UserProfile createProfile(User user, UserProfileRequest request){
                 if(userProfileRepository.findByUser(user).isPresent()){
                         throw new RuntimeException("Profile already exists");
@@ -39,46 +46,53 @@ public class UserProfileService {
                         pictureUrl = "/images/placeholder.jpg";
                 }
 
-
+                //save user profile
                 UserProfile profile = UserProfile.builder()
                         .user(user)
                         .name(request.getName())
+                        .profilePictureUrl(pictureUrl)
+                        .aboutMe(request.getAboutMe())
+                        .build();
+                userProfileRepository.save(profile);
+
+                //save user bio
+                UserBio bio = UserBio.builder()
+                        .user(user)
                         .age(request.getAge())
                         .gender(request.getGender())
                         .city(request.getCity())
-                        .languages(request.getLanguages())
                         .interests(request.getInterests())
-                        .genderPreference(request.getGenderPreference()!=null 
-                                ? request.getGenderPreference()
-                                : GenderPreference.ANY)
-                        .minAgePreference(request.getMinAgePreference()!=null
-                                ? request.getMinAgePreference()
-                                : 18)
-                        .maxAgePreference(request.getMaxAgePreference()!=null
-                                ? request.getMaxAgePreference()
-                                : 100)
-                        .profilePictureUrl(pictureUrl)
+                        .languages(request.getLanguages())
+                        .genderPreference(request.getGenderPreference() != null
+                        ? request.getGenderPreference()
+                        : GenderPreference.ANY)
+                        .minAgePreference(request.getMinAgePreference() != null
+                        ? request.getMinAgePreference()
+                        : 18)
+                        .maxAgePreference(request.getMaxAgePreference() != null
+                        ? request.getMaxAgePreference()
+                        : 100)
                         .build();
+                userBioRepository.save(bio);
 
-                return userProfileRepository.save(profile);
+                return profile;
 
         }
 
+        //update profile
+        @Transactional
         public UserProfile updateProfile(User user, UserProfileRequest request){
                 UserProfile profile = userProfileRepository.findByUser(user)
                         .orElseThrow(() -> new RuntimeException("Profile not found"));
+                
+                UserBio bio = userBioRepository.findByUser(user)
+                        .orElseThrow(() -> new RuntimeException("Bio not found"));
 
+                //first we update relevant userProfile fields        
                 if (request.getName()!=null) profile.setName(request.getName());
-                if (request.getAge()!=null) profile.setAge(request.getAge());
-                if (request.getGender()!=null) profile.setGender(request.getGender());
-                if (request.getCity()!=null) profile.setCity(request.getCity());
-                if (request.getLanguages()!=null) profile.setLanguages(request.getLanguages());
-                if (request.getInterests()!=null) profile.setInterests(request.getInterests());
-                if (request.getGenderPreference() != null) profile.setGenderPreference(request.getGenderPreference());
-                if (request.getMinAgePreference() != null) profile.setMinAgePreference(request.getMinAgePreference());
-                if (request.getMaxAgePreference() != null) profile.setMaxAgePreference(request.getMaxAgePreference());
+                if (request.getAboutMe() != null) profile.setAboutMe(request.getAboutMe());
 
-                //handle profile picture update
+                //handle profile picture update for the userProfile entity
                 if (request.getProfilePicture() != null && !request.getProfilePicture().isEmpty()) {
                         try {
                         String pictureUrl = fileStorageService.saveFile(request.getProfilePicture(), user.getId());
@@ -87,11 +101,41 @@ public class UserProfileService {
                         throw new RuntimeException("Failed to upload profile picture");
                         }
                 }
-                return userProfileRepository.save(profile);
+                userProfileRepository.save(profile);
+
+                //now update the userBio fields if they are present in the request
+                if (request.getAge()!=null) bio.setAge(request.getAge());
+                if (request.getGender()!=null) bio.setGender(request.getGender());
+                if (request.getCity()!=null) bio.setCity(request.getCity());
+                if (request.getLanguages()!=null) bio.setLanguages(request.getLanguages());
+                if (request.getInterests()!=null) bio.setInterests(request.getInterests());
+                if (request.getGenderPreference() != null) bio.setGenderPreference(request.getGenderPreference());
+                if (request.getMinAgePreference() != null) bio.setMinAgePreference(request.getMinAgePreference());
+                if (request.getMaxAgePreference() != null) bio.setMaxAgePreference(request.getMaxAgePreference());
+
+                userBioRepository.save(bio);
+
+                return profile;
         }
 
-    
-        public UserProfileResponse getUserById(Long id) {
+        //get particular user by id for recommendation endpoint
+        public UserResponse getUserById(Long id) {
+                User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+                UserProfile profile = userProfileRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+
+                return UserResponse.builder()
+                        .id(user.getId())
+                        .name(profile.getName())
+                        .profileLink("/api/users/" + user.getId())
+                        .profilePictureUrl(profile.getProfilePictureUrl())
+                        .build();
+        }
+
+        //get user profile by id
+        public UserProfileResponse getProfileById(Long id) {
                 User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -101,34 +145,38 @@ public class UserProfileService {
                 return UserProfileResponse.builder()
                         .id(user.getId())
                         .name(profile.getName())
-                        .profileLink("/api/users/" + user.getId())
-                        .profilePictureUrl(profile.getProfilePictureUrl())
+                        .aboutMe(profile.getAboutMe())
                         .build();
+
         }
 
         //for Bio endpoint
-        public BioResponse getBio(Long id){
+        public UserBioResponse getBio(Long id){
                 User user = userRepository.findById(id)
                         .orElseThrow(()->new ResourceNotFoundException("User not found"));
 
-                UserProfile profile = userProfileRepository.findByUser(user)
-                        .orElseThrow(()->new ResourceNotFoundException("Profile not found"));
+                UserBio bio = userBioRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Bio not found"));
                 
-                return BioResponse.builder()
+                return UserBioResponse.builder()
                         .id(user.getId())
-                        .age(profile.getAge())
-                        .gender(profile.getGender())
-                        .city(profile.getCity())
-                        .interests(profile.getInterests())
-                        .languages(profile.getLanguages())
+                        .age(bio.getAge())
+                        .gender(bio.getGender())
+                        .city(bio.getCity())
+                        .interests(bio.getInterests())
+                        .languages(bio.getLanguages())
+                        .genderPreference(bio.getGenderPreference())
+                        .minAgePreference(bio.getMinAgePreference())
+                        .maxAgePreference(bio.getMaxAgePreference())
                         .build();
 
         }
 
         //for admin dashboard later
-        public List<UserProfileResponse> getAllUsers() {
+        public List<UserResponse> getAllUsers() {
+                //return all the userProfiles in the repository
                 return userProfileRepository.findAll().stream()
-                .map(profile -> UserProfileResponse.builder()
+                .map(profile -> UserResponse.builder()
                         .id(profile.getUser().getId())
                         .name(profile.getName())
                         .profileLink("/api/users/" + profile.getUser().getId())
