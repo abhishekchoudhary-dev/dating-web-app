@@ -13,6 +13,7 @@ import com.matchme.backend.user.profile.dto.UserProfileResponse;
 import com.matchme.backend.user.profile.dto.UserBioResponse;
 import com.matchme.backend.user.profile.picture.FileStorageService;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 import com.matchme.backend.exception.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
@@ -27,6 +28,8 @@ public class UserProfileService {
         //dependency to store pictures
         private final FileStorageService fileStorageService;
 
+        @Value("${app.server.url}")
+        private String serverUrl;
 
         //create a new profile
         @Transactional
@@ -38,12 +41,12 @@ public class UserProfileService {
                 String pictureUrl = null;
                 if (request.getProfilePicture() != null && !request.getProfilePicture().isEmpty()) {
                         try {
-                        pictureUrl = fileStorageService.saveFile(request.getProfilePicture(), user.getId());
+                        pictureUrl = serverUrl + fileStorageService.saveFile(request.getProfilePicture(), user.getId());
                         } catch (IOException e) {
                         throw new RuntimeException("Failed to upload profile picture");
                         } 
                 } else  {
-                        pictureUrl = "/images/placeholder.jpg";
+                        pictureUrl = serverUrl + "/images/placeholder.jpg";
                 }
 
                 //save user profile
@@ -95,7 +98,7 @@ public class UserProfileService {
                 //handle profile picture update for the userProfile entity
                 if (request.getProfilePicture() != null && !request.getProfilePicture().isEmpty()) {
                         try {
-                        String pictureUrl = fileStorageService.saveFile(request.getProfilePicture(), user.getId());
+                        String pictureUrl = serverUrl  + fileStorageService.saveFile(request.getProfilePicture(), user.getId());
                         profile.setProfilePictureUrl(pictureUrl);
                         } catch (IOException e) {
                         throw new RuntimeException("Failed to upload profile picture");
@@ -144,7 +147,6 @@ public class UserProfileService {
 
                 return UserProfileResponse.builder()
                         .id(user.getId())
-                        .name(profile.getName())
                         .aboutMe(profile.getAboutMe())
                         .build();
 
