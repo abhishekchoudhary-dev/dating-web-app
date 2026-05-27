@@ -10,5 +10,6 @@ public class UserResponse{
     private String name;
     private String profileLink;
     private String profilePictureUrl;
+    private boolean profileComplete;
 
 }
