@@ -78,6 +78,10 @@ public class UserProfileService {
                         .build();
                 userBioRepository.save(bio);
 
+                //mark user profile as complete if all required fields are filled
+                user.setProfileComplete(true);
+                userRepository.save(user);
+
                 return profile;
 
         }
@@ -134,6 +138,7 @@ public class UserProfileService {
                         .name(profile.getName())
                         .profileLink("/api/users/" + user.getId())
                         .profilePictureUrl(profile.getProfilePictureUrl())
+                        .profileComplete(user.isProfileComplete())
                         .build();
         }
 
