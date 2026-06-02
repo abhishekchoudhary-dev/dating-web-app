@@ -4,6 +4,7 @@ import React from "react";
 import "./globals.css";
 import { Inter, Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -18,7 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={cn("h-full", "antialiased", "font-sans", inter.variable)}>
         <body>
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
         </body>
     </html>
   );
