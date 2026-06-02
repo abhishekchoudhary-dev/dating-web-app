@@ -38,12 +38,6 @@ export async function loginUser(form: any) {
     redirect('/discover');
 }
 
-export async function logout() {
-    const cookieStore = await cookies();
-    cookieStore.delete('access_token');
-    redirect('/login');
-}
-
 async function setResponseCookies(responseCookies: string[]) {
     const parsedCookies: Cookie[] = setCookieParser.parse(responseCookies);
     const cookieStore = await cookies();

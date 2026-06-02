@@ -17,3 +17,9 @@ export async function getAuthenticatedUser() {
 
     return response.json();
 }
+
+export async function logoutUser() {
+    const cookieStore = await cookies();
+    cookieStore.delete('access_token');
+    redirect('/login');
+}

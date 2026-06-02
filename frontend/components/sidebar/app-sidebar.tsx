@@ -5,10 +5,7 @@ import * as React from "react"
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import {
-  HeartIcon,
-  CompassIcon, UserIcon
-} from "lucide-react"
+import { HeartIcon, CompassIcon, UserIcon } from "lucide-react"
 
 const data = {
   user: {

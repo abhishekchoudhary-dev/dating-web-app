@@ -1,5 +1,7 @@
 "use client"
 
+import { logoutUser } from "@/app/(authenticated)/actions";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
@@ -40,7 +42,7 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={ async () => await logoutUser() }>
               <LogOutIcon/> Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
