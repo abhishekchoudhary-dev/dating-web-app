@@ -1,7 +1,7 @@
 "use server"
 
 import { cookies } from "next/headers";
-import { ProfileEditFormFields } from "@/app/(authenticated)/profile/edit/types";
+import { ProfileEditFormFields } from "@/app/(authenticated)/profile/update/types";
 
 export async function updateProfile(data: ProfileEditFormFields) {
     const cookieStore = await cookies();

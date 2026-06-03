@@ -1,6 +1,6 @@
-import { getProfileEditFormData } from "@/app/(authenticated)/profile/edit/data";
-import { getOptions } from "@/app/(authenticated)/profile/edit/data";
-import ProfileEditForm from "@/app/(authenticated)/profile/edit/ProfileEditForm";
+import { getProfileEditFormData } from "@/app/(authenticated)/profile/update/data";
+import { getOptions } from "@/app/(authenticated)/profile/update/data";
+import ProfileEditForm from "@/app/(authenticated)/profile/update/ProfileEditForm";
 import { Options } from "@/app/(authenticated)/profile/types";
 
 export default async function ProfileEdit() {

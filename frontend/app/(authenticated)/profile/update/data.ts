@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
-import { UserBioResponse, UserProfileResponse, UserResponse } from "@/app/(authenticated)/profile/edit/types";
-import { Option } from "@/app/(authenticated)/profile/types";
+import { UserBioResponse, UserProfileResponse, UserResponse } from "@/app/(authenticated)/profile/update/types";
 
 export async function getOptions() {
     const cookieStore = await cookies();
@@ -44,8 +43,6 @@ export async function getAuthenticatedUserData() {
 
 export async function getProfileEditFormData() {
     const data = await getAuthenticatedUserData();
-
-    console.log(data)
 
     return {
         name: data.name ?? "",

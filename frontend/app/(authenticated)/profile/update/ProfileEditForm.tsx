@@ -30,11 +30,11 @@ import { Button } from "@/components/ui/button";
 
 import { Options } from "@/app/(authenticated)/profile/types";
 import { Controller, useForm } from "react-hook-form";
-import { updateProfile } from "@/app/(authenticated)/profile/edit/actions";
-import { ProfileEditFormFields } from "@/app/(authenticated)/profile/edit/types";
+import { updateProfile } from "@/app/(authenticated)/profile/update/actions";
+import { ProfileEditFormFields } from "@/app/(authenticated)/profile/update/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import React, { useRef, useState } from "react";
-import { ImageIcon, PencilIcon } from "lucide-react";
+import { ImageIcon, PencilIcon, UserIcon } from "lucide-react";
 
 type ProfileEditFormProps = {
     options: Options
@@ -74,7 +74,9 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
                         >
                             <Avatar className="size-42">
                                 <AvatarImage src={field.value} alt="Profile photo" />
-                                <AvatarFallback className="text-xl">?</AvatarFallback>
+                                <AvatarFallback className="text-xl">
+                                    <UserIcon size={50}/>
+                                </AvatarFallback>
                             </Avatar>
 
                             <span className="z-20 absolute bottom-0 right-0 flex items-center justify-center size-12 rounded-full bg-primary border-2 border-background">
@@ -265,35 +267,43 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
                 </div>
                 <div className="space-y-3">
                     <Label>Age range</Label>
-                    <div className="flex items-end h-5">
+                    <div className="flex items-end h-7">
                         <Controller
                             name="preferenceAgeRange"
                             control={control}
                             render={({ field }) => (
-                                <Slider
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                    min={18}
-                                    max={90}
-                                    step={1}
-                                />
+                                <div className="flex items-center gap-3 w-full">
+                                    <span className="text-sm text-muted-foreground w-6 text-right">{field.value[0]}</span>
+                                    <Slider
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        min={18}
+                                        max={90}
+                                        step={1}
+                                    />
+                                    <span className="text-sm text-muted-foreground w-6">{field.value[1]}</span>
+                                </div>
                             )}
                         />
                     </div>
                 </div>
                 <div className="space-y-3">
                     <Label>Distance radius</Label>
-                    <div className="flex items-end h-5">
+                    <div className="flex items-end h-7">
                         <Controller
                             name="preferenceDistanceRadius"
                             control={control}
                             render={({ field }) => (
-                                <Slider
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                    max={100}
-                                    step={1}
-                                />
+                                <div className="flex items-center gap-3 w-full">
+                                    <Slider
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        min={1}
+                                        max={100}
+                                        step={1}
+                                    />
+                                    <span className="text-sm text-muted-foreground w-6">{field.value[0]}km</span>
+                                </div>
                             )}
                         />
                     </div>
