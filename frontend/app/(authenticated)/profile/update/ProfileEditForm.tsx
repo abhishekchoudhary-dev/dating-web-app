@@ -24,8 +24,9 @@ import {
     ComboboxEmpty,
     ComboboxItem,
     ComboboxList,
-    ComboboxValue,
+    ComboboxValue, useComboboxAnchor,
 } from "@/components/ui/combobox"
+
 import { Button } from "@/components/ui/button";
 
 import { Options } from "@/app/(authenticated)/profile/types";
@@ -53,6 +54,7 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
+    const anchor = useComboboxAnchor()
 
     const onSubmit = (data: ProfileEditFormFields) => {
         const response = updateProfile(data);
@@ -60,7 +62,6 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
-
             <div className="space-y-3 flex justify-center">
                 <Controller
                     name="profilePictureLink"
@@ -156,48 +157,13 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
                     />
                 </div>
                 <div className="space-y-3">
-                    <Label htmlFor="languages">Languages</Label>
-                    <Controller
-                        name="languages"
-                        control={control}
-                        render={({ field }) => (
-                            <Combobox
-                                items={options.languages}
-                                multiple
-                                value={field.value}
-                                onValueChange={field.onChange}
-                            >
-                                <ComboboxChips>
-                                    <ComboboxValue>
-                                        {field.value.map((item) => (
-                                            <ComboboxChip key={item.name}>{item.emoji} {item.displayName}</ComboboxChip>
-                                        ))}
-                                    </ComboboxValue>
-                                    <ComboboxChipsInput placeholder="Languages" />
-                                </ComboboxChips>
-                                <ComboboxContent>
-                                    <ComboboxEmpty>No items found.</ComboboxEmpty>
-                                    <ComboboxList>
-                                        {(item) => (
-                                            <ComboboxItem key={item.name} value={item}>
-                                                {item.emoji} {item.displayName}
-                                            </ComboboxItem>
-                                        )}
-                                    </ComboboxList>
-                                </ComboboxContent>
-                            </Combobox>
-                        )}
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                        {...register("location")}
+                        id="location"
+                        placeholder="Your location"
                     />
                 </div>
-            </div>
-
-            <div className="space-y-3">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                    {...register("location")}
-                    id="location"
-                    placeholder="Your location"
-                />
             </div>
 
             <div className="space-y-3">
@@ -210,6 +176,47 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
                     className="resize-none"
                 />
             </div>
+
+            <div className="space-y-3">
+                <Label htmlFor="languages">Languages</Label>
+                <Controller
+                    name="languages"
+                    control={control}
+                    render={({ field }) => (
+                        <Combobox
+                            items={options.languages}
+                            multiple
+                            value={field.value}
+                            onValueChange={(values) => {
+                                if (values.length <= 3) {
+                                    field.onChange(values);
+                                }
+                            }}
+                            isItemEqualToValue={(item, value) => item.name === value.name}
+                        >
+                            <ComboboxChips ref={anchor}>
+                                <ComboboxValue>
+                                    {field.value.map((item) => (
+                                        <ComboboxChip key={item.name}>{item.emoji} {item.displayName}</ComboboxChip>
+                                    ))}
+                                </ComboboxValue>
+                                <ComboboxChipsInput placeholder="Languages" />
+                            </ComboboxChips>
+                            <ComboboxContent anchor={anchor}>
+                                <ComboboxEmpty>No items found.</ComboboxEmpty>
+                                <ComboboxList>
+                                    {(item) => (
+                                        <ComboboxItem key={item.name} value={item}>
+                                            {item.emoji} {item.displayName}
+                                        </ComboboxItem>
+                                    )}
+                                </ComboboxList>
+                            </ComboboxContent>
+                        </Combobox>
+                    )}
+                />
+            </div>
+
             <div className="space-y-3">
                 <Label htmlFor="interests">Interests</Label>
                 <Controller
