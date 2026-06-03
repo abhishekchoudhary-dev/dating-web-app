@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+import { getProfileEditFormData } from "@/app/(authenticated)/profile/edit/data";
+import { getOptions } from "@/app/(authenticated)/profile/edit/data";
+import ProfileEditForm from "@/app/(authenticated)/profile/edit/ProfileEditForm";
+import { Options } from "@/app/(authenticated)/profile/types";
 
-export const metadata: Metadata = {
-    title: 'Edit profile',
-}
+export default async function ProfileEdit() {
+    const options: Options = await getOptions();
+    const data = await getProfileEditFormData();
 
-export default function ProfileEdit() {
     return (
-        <h1>Profile edit content</h1>
+        <ProfileEditForm options={options} data={data} />
     );
 }
