@@ -16,7 +16,7 @@ export default async function Profile() {
     const user = await getAuthenticatedUserData();
 
     return (
-        <div className="space-y-7">
+        <div className="space-y-7 w-full">
             <div className="flex justify-center">
                 <Avatar className="size-42">
                     <AvatarImage src={user.profilePictureLink} alt="Profile photo" />
@@ -42,7 +42,7 @@ export default async function Profile() {
                 <p className="text-base font-medium ">{user.name}</p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Age</p>
                     <p className="text-base font-medium ">{user.age}</p>
