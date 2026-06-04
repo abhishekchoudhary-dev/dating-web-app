@@ -1,10 +1,12 @@
-package com.matchme.backend.user.profile;
+package com.matchme.backend.user.bio.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public enum Language {
-
+@AllArgsConstructor
+public enum Language implements UserBioOption {
     ENGLISH("English", "🇬🇧"),
     ESTONIAN("Estonian", "🇪🇪"),
     HINDI("Hindi", "🇮🇳"),
@@ -20,9 +22,8 @@ public enum Language {
     private final String displayName;
     private final String emoji;
 
-    Language(String displayName, String emoji){
-        this.displayName = displayName;
-        this.emoji = emoji;
+    @JsonCreator
+    public static Language fromString(String name) {
+        return valueOf(name);
     }
-    
 }

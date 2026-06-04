@@ -1,11 +1,10 @@
 package com.matchme.backend.user.profile.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class UserProfileResponse {
-    private Long id;
-    private String aboutMe;
+    String aboutMe;
 }

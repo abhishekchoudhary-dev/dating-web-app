@@ -15,22 +15,23 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
+    // Authentication
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "profile_complete")
-    private boolean profileComplete = false;
+    // Data
+    private String name;
+    private String profileLink;
+    private String profilePictureLink;
 
-    // --- UserDetails ---
-
+    // UserDetails
     @NonNull
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,6 +1,7 @@
 package com.matchme.backend.auth;
 
 import com.matchme.backend.auth.dto.AuthResponse;
+import com.matchme.backend.auth.dto.AuthService;
 import com.matchme.backend.auth.dto.LoginRequest;
 import com.matchme.backend.auth.dto.RegisterRequest;
 import jakarta.servlet.http.HttpServletResponse;

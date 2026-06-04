@@ -35,5 +35,4 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         );
         objectMapper.writeValue(response.getOutputStream(), body);
     }
-
 }

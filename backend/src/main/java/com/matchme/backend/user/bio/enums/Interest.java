@@ -1,9 +1,12 @@
-package com.matchme.backend.user.profile;
+package com.matchme.backend.user.bio.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public enum Interest {
+@AllArgsConstructor
+public enum Interest implements UserBioOption {
     MUSIC("Music", "🎵"),
     TRAVEL("Travel", "🌍"),
     GAMING("Gaming", "🎮"),
@@ -20,14 +23,11 @@ public enum Interest {
     FOOD("Food", "🍕"),
     PETS("Pets", "🐾");
 
-
     private final String displayName;
     private final String emoji;
 
-    Interest(String displayName,String emoji){
-        this.displayName = displayName;
-        this.emoji = emoji;
-
+    @JsonCreator
+    public static Interest fromString(String name) {
+        return valueOf(name);
     }
-
 }

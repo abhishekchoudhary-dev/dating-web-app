@@ -5,18 +5,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-//spring will service static files in the uploads folder from here
-
 @Configuration
-public class WebConfig implements WebMvcConfigurer{
-
-    @Value("${app.upload.dir}")
+public class WebConfig implements WebMvcConfigurer {
+    @Value("${app.uploads.dir}")
     private String uploadDir;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+        registry.addResourceHandler("/uploads/**").addResourceLocations(String.format("file:%s/", uploadDir));
     }
-
 }

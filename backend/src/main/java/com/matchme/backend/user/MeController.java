@@ -1,70 +1,80 @@
 package com.matchme.backend.user;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.matchme.backend.user.bio.UserBioService;
+import com.matchme.backend.user.bio.dto.UserBioRequest;
+import com.matchme.backend.user.bio.dto.UserBioResponse;
+import com.matchme.backend.user.bio.enums.UserBioOption;
+import com.matchme.backend.user.dto.MeResponse;
+import com.matchme.backend.user.dto.UserRequest;
+import com.matchme.backend.user.dto.UserResponse;
 import com.matchme.backend.user.profile.UserProfileService;
-import com.matchme.backend.user.profile.dto.UserProfileResponse;
-import com.matchme.backend.user.profile.dto.UserResponse;
-import com.matchme.backend.user.profile.UserProfile;
-import com.matchme.backend.user.profile.dto.UserBioResponse;
 import com.matchme.backend.user.profile.dto.UserProfileRequest;
-
+import com.matchme.backend.user.profile.dto.UserProfileResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/me")
 @RequiredArgsConstructor
 public class MeController {
-
     private final UserProfileService userProfileService;
+    private final UserBioService userBioService;
+    private final UserService userService;
 
-    //this maps to our endpoint /users/{id} for current logged in user
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> me(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userProfileService.getUserById(user.getId()));
+    // USER
+    @GetMapping
+    public ResponseEntity<MeResponse> getMe(@AuthenticationPrincipal User user) {
+        MeResponse me = userService.getMe(user.getId());
+        return ResponseEntity.ok(me);
     }
 
-    //this maps to our endpoint /users/{id}/profile for current logged in user
-    @GetMapping("/me/profile")
-    public ResponseEntity<UserProfileResponse> myProfile(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userProfileService.getProfileById(user.getId()));
+    @PatchMapping
+    public ResponseEntity<UserResponse> updateMe(@AuthenticationPrincipal User user, @Valid @RequestBody UserRequest request) {
+        UserResponse me = userService.update(user.getId(), request);
+        return ResponseEntity.ok(me);
     }
 
-    //this maps to our endpoint /users/{id}/bio for current logged in user
-    @GetMapping("/me/bio")
-    public ResponseEntity<UserBioResponse> myBio(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userProfileService.getBio(user.getId()));
+    @PutMapping(value = "/profile-picture", consumes = "multipart/form-data")
+    public ResponseEntity<UserResponse> updateMeProfilePicture(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) {
+        UserResponse me = userService.updateProfilePicture(user.getId(), file);
+        return ResponseEntity.ok(me);
     }
 
-    //this maps to endpoint /users/{id}/profile for current logged in user to create profile
-    @PostMapping(value = "/me/profile", consumes = "multipart/form-data")
-    public ResponseEntity<UserProfile> createProfile(
-        @AuthenticationPrincipal User user,
-        @Valid @ModelAttribute UserProfileRequest request){
-            UserProfile profile = userProfileService.createProfile(user,request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(profile);
+    // PROFILE
+    @PutMapping("/profile")
+    public ResponseEntity<UserProfileResponse> updateMeProfile(@AuthenticationPrincipal User user, @Valid @RequestBody UserProfileRequest request) {
+        UserProfileResponse profile = userProfileService.update(user.getId(), request);
+        return ResponseEntity.ok(profile);
     }
 
-    //this maps to the endpoint /users/{id}/profile for current logged in user to update profile
-    @PatchMapping(value = "/me/profile", consumes = "multipart/form-data")
-    public ResponseEntity<UserProfile> updateProfile(
-        @AuthenticationPrincipal User user,
-        @ModelAttribute UserProfileRequest request) {
-            UserProfile profile = userProfileService.updateProfile(user, request);
-            return ResponseEntity.ok(profile);
-
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileResponse> getMeProfile(@AuthenticationPrincipal User user) {
+        UserProfileResponse profile = userProfileService.get(user.getId());
+        return ResponseEntity.ok(profile);
     }
 
+    // BIO
+    @PutMapping("/bio")
+    public ResponseEntity<UserBioResponse> updateMeBio(@AuthenticationPrincipal User user, @Valid @RequestBody UserBioRequest request) {
+        UserBioResponse bio = userBioService.update(user.getId(), request);
+        return ResponseEntity.ok(bio);
+    }
 
-    
+    @GetMapping("/bio")
+    public ResponseEntity<UserBioResponse> getMeBio(@AuthenticationPrincipal User user) {
+        UserBioResponse bio = userBioService.get(user.getId());
+        return ResponseEntity.ok(bio);
+    }
 
+    @GetMapping("/bio/options")
+    public ResponseEntity<Map<String, List<? extends UserBioOption>>> getMeBioOptions() {
+        return ResponseEntity.ok(userBioService.getOptions());
+    }
 }
