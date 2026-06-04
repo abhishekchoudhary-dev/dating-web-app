@@ -318,7 +318,7 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
             </div>
 
             <div className="flex justify-end">
-                <Button type="submit">Update profile</Button>
+                <Button type="submit">Save profile</Button>
             </div>
         </form>
     );

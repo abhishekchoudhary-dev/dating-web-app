@@ -19,7 +19,7 @@ export async function registerUser(form: any) {
 
     await setResponseCookies(response.headers.getSetCookie());
 
-    redirect('/discover');
+    redirect('/onboarding');
 }
 
 export async function loginUser(form: any) {
