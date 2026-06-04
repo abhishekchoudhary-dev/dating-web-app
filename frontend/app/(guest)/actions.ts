@@ -6,14 +6,11 @@ import { redirect } from 'next/navigation';
 
 const BASE_URL = 'http://localhost:8080/api';
 
-export async function register(initialState: any, form: FormData) {
-    const email = form.get('email')
-    const password = form.get('password')
-
+export async function registerUser(form: any) {
     const response = await fetch(`${BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ ...form }),
     })
 
     if (!response.ok) {
@@ -22,17 +19,14 @@ export async function register(initialState: any, form: FormData) {
 
     await setResponseCookies(response.headers.getSetCookie());
 
-    redirect('/discover');
+    redirect('/onboarding');
 }
 
-export async function login(initialState: any, form: FormData) {
-    const email = form.get('email')
-    const password = form.get('password')
-
+export async function loginUser(form: any) {
     const response = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ ...form }),
     })
 
     if (!response.ok) {
@@ -42,12 +36,6 @@ export async function login(initialState: any, form: FormData) {
     await setResponseCookies(response.headers.getSetCookie());
 
     redirect('/discover');
-}
-
-export async function logout() {
-    const cookieStore = await cookies();
-    cookieStore.delete('access_token');
-    redirect('/login');
 }
 
 async function setResponseCookies(responseCookies: string[]) {

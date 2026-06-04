@@ -7,5 +7,5 @@ export default function PageTitle() {
     const title = pageTitles[pathname]
 
     if (!title) return null
-    return <h1 className="text-5xl font-bold">{title}</h1>
+    return <h1 className="absolute left-1/2 -translate-x-1/2 text-2xl font-semibold flex items-center gap-2">{title}</h1>
 }
