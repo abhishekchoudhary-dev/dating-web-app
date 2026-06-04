@@ -2,7 +2,6 @@ package com.matchme.backend.user.bio;
 
 import com.matchme.backend.exception.ResourceNotFoundException;
 import com.matchme.backend.user.User;
-import com.matchme.backend.user.bio.dto.UserBioOptionResponse;
 import com.matchme.backend.user.bio.dto.UserBioRequest;
 import com.matchme.backend.user.bio.dto.UserBioResponse;
 import com.matchme.backend.user.bio.enums.*;
@@ -11,10 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
