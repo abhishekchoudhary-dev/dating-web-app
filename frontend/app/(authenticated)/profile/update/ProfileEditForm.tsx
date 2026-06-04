@@ -36,13 +36,15 @@ import { ProfileEditFormFields } from "@/app/(authenticated)/profile/update/type
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import React, { useRef, useState } from "react";
 import { ImageIcon, PencilIcon, UserIcon } from "lucide-react";
+import { redirect } from "next/navigation";
 
 type ProfileEditFormProps = {
     options: Options
     data: ProfileEditFormFields
+    redirectTo?: string
 }
 
-export default function ProfileEditForm({ options, data }: ProfileEditFormProps) {
+export default function ProfileEditForm({ options, data, redirectTo }: ProfileEditFormProps) {
     const {
         register,
         handleSubmit,
@@ -58,6 +60,8 @@ export default function ProfileEditForm({ options, data }: ProfileEditFormProps)
 
     const onSubmit = (data: ProfileEditFormFields) => {
         const response = updateProfile(data);
+
+        if (redirectTo) redirect(redirectTo);
     }
 
     return (

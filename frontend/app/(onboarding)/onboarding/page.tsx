@@ -12,7 +12,7 @@ export default async function page() {
                 <h1 className="text-3xl font-semibold">Complete your profile</h1>
                 <p className="text-muted-foreground">Enter your details to start matching.</p>
             </div>
-            <ProfileEditForm options={options} data={data} />
+            <ProfileEditForm options={options} data={data} redirectTo="/discover" />
         </main>
     );
 }
