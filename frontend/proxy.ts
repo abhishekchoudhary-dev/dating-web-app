@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
 
 const publicRoutes = ["/login", "/register"]
 const onboardingRoute = "/onboarding"
@@ -22,10 +23,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/login", request.url))
     }
 
-    const me = await fetch(`http://localhost:8080/api/me`, {
-        method: 'GET',
-        headers: { Cookie: `access_token=${token}` }
-    }).then(r => r.json());
+    const me = await getAuthenticatedUser();
 
     // Profile is not complete and user is not on some other route -> redirect to /onboarding
     if (!me.profileComplete && pathname !== onboardingRoute) {
