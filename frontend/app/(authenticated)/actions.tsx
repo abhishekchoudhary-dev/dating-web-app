@@ -10,7 +10,8 @@ export async function getAuthenticatedUser() {
 
     const response = await fetch(`http://localhost:8080/api/me`, {
         method: 'GET',
-        headers: { Cookie: `access_token=${token}` }
+        headers: { Cookie: `access_token=${token}` },
+        cache: 'no-store'
     })
 
     if (!response.ok) redirect('/login')

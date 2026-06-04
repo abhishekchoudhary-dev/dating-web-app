@@ -3,11 +3,15 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import PageTitle from "@/components/PageTitle";
+import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
+import { MeResponse } from "@/app/(authenticated)/types";
 
 export default async function AuthenticatedLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+    const user: MeResponse = await getAuthenticatedUser();
+
     return (
         <SidebarProvider>
-            <AppSidebar />
+            <AppSidebar user={user} />
             <SidebarInset>
                 <header className="flex justify-between h-16 shrink-0 items-center gap-2">
                     <div className="flex items-center gap-2 px-4">

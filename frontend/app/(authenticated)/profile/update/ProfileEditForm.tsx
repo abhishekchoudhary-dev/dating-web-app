@@ -36,7 +36,7 @@ import { ProfileEditFormFields } from "@/app/(authenticated)/profile/update/type
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import React, { useRef, useState } from "react";
 import { ImageIcon, PencilIcon, UserIcon } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type ProfileEditFormProps = {
     options: Options
@@ -45,6 +45,7 @@ type ProfileEditFormProps = {
 }
 
 export default function ProfileEditForm({ options, data, redirectTo }: ProfileEditFormProps) {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -58,10 +59,10 @@ export default function ProfileEditForm({ options, data, redirectTo }: ProfileEd
 
     const anchor = useComboboxAnchor()
 
-    const onSubmit = (data: ProfileEditFormFields) => {
-        const response = updateProfile(data);
-
-        if (redirectTo) redirect(redirectTo);
+    const onSubmit = async (data: ProfileEditFormFields) => {
+        const response = await updateProfile(data);
+        router.refresh();
+        if (redirectTo) router.push(redirectTo)
     }
 
     return (
