@@ -80,7 +80,7 @@ export default function ProfileEditForm({ options, data, redirectTo }: ProfileEd
         } else if (response?.message) {
             setError('root', { message: response.message });
         } else {
-            toast("Profile updated", { position: "top-center" })
+            toast("Profile saved", { position: "top-center" })
             router.refresh();
             if (redirectTo) router.push(redirectTo)
         }
