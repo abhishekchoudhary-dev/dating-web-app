@@ -34,7 +34,7 @@ import { updateProfile } from "@/app/(authenticated)/profile/update/actions";
 import { ProfileEditFormFields } from "@/app/(authenticated)/profile/update/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import React, { useRef, useState } from "react";
-import { ImageIcon, PencilIcon, UserIcon } from "lucide-react";
+import { ImageIcon, PencilIcon, UserIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { toast } from "sonner";
@@ -93,49 +93,65 @@ export default function ProfileEditForm({ options, data, redirectTo }: ProfileEd
                     name="profilePictureLink"
                     control={control}
                     render={({ field }) => (
-                        <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            aria-label="Upload profile photo"
-                            className="relative rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
-                        >
-                            <Avatar className="size-42">
-                                <AvatarImage src={field.value} alt="Profile photo" />
-                                <AvatarFallback className="text-xl">
-                                    <UserIcon size={50}/>
-                                </AvatarFallback>
-                            </Avatar>
+                        <div className="relative w-fit">
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                aria-label="Upload profile photo"
+                                className="relative rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
+                            >
+                                <Avatar className="size-42">
+                                    <AvatarImage src={field.value} alt="Profile photo" />
+                                    <AvatarFallback className="text-xl">
+                                        <UserIcon size={50}/>
+                                    </AvatarFallback>
+                                </Avatar>
 
-                            <span className="z-20 absolute bottom-0 right-0 flex items-center justify-center size-12 rounded-full bg-primary border-2 border-background">
-                                <PencilIcon color="white" size={24} />
-                            </span>
+                                <span className="z-20 absolute bottom-0 right-0 flex items-center justify-center size-12 rounded-full bg-primary border-2 border-background">
+                                    <PencilIcon color="white" size={24} />
+                                </span>
 
-                            <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/0 hover:bg-black/40 transition-colors group">
-                                <ImageIcon className="size-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
+                                <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/0 hover:bg-black/40 transition-colors group">
+                                    <ImageIcon className="size-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
 
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                aria-hidden="true"
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const file = e.target.files?.[0];
-                                    if (!file) return;
-                                    setAvatarFile(file);
-                                    const reader = new FileReader();
-                                    reader.onload = (e: ProgressEvent<FileReader>) => {
-                                        if (e.target?.result) {
-                                            field.onChange(e.target.result as string);
-                                            setValue("profilePictureFile", file)
-                                        }
-                                    };
-                                    reader.readAsDataURL(file);
-                                    e.target.value = "";
-                                }}
-                            />
-                        </button>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    aria-hidden="true"
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        setAvatarFile(file);
+                                        const reader = new FileReader();
+                                        reader.onload = (e: ProgressEvent<FileReader>) => {
+                                            if (e.target?.result) {
+                                                field.onChange(e.target.result as string);
+                                                setValue("profilePictureFile", file)
+                                            }
+                                        };
+                                        reader.readAsDataURL(file);
+                                        e.target.value = "";
+                                    }}
+                                />
+                            </button>
+
+                            {field.value && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        field.onChange(null);
+                                        setValue("profilePictureFile", null);
+                                    }}
+                                    aria-label="Remove profile photo"
+                                    className="absolute top-0 left-0 z-20 flex items-center justify-center size-8 rounded-full bg-destructive border-2 border-background"
+                                >
+                                    <XIcon color="white" size={14} />
+                                </button>
+                            )}
+                        </div>
                     )}
                 />
             </div>

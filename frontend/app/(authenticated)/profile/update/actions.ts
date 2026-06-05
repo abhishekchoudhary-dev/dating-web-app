@@ -7,6 +7,8 @@ export async function updateProfile(data: ProfileEditFormFields) {
     const cookieStore = await cookies();
     const token = cookieStore.get('access_token')?.value;
 
+    console.log(data)
+
     if (data.profilePictureFile) {
         const formData = new FormData();
         formData.append("file", data.profilePictureFile);
@@ -14,6 +16,11 @@ export async function updateProfile(data: ProfileEditFormFields) {
             method: 'PUT',
             headers: { Cookie: `access_token=${token}` },
             body: formData,
+        });
+    } else if (data.profilePictureLink === null) {
+        await fetch(`http://localhost:8080/api/me/profile-picture`, {
+            method: 'DELETE',
+            headers: { Cookie: `access_token=${token}` },
         });
     }
 

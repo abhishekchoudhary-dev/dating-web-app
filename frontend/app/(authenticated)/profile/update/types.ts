@@ -25,7 +25,7 @@ export type UserBioResponse = {
 export type ProfileEditFormFields = {
     name: string
     profilePictureLink: string
-    profilePictureFile?: File
+    profilePictureFile?: File | null
     age: number
     gender: string
     languages: Option[]

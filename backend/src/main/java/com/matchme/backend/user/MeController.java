@@ -43,6 +43,12 @@ public class MeController {
         return ResponseEntity.ok(me);
     }
 
+    @DeleteMapping(value = "/profile-picture")
+    public ResponseEntity<UserResponse> deleteMeProfilePicture(@AuthenticationPrincipal User user) {
+        UserResponse me = userService.deleteProfilePicture(user.getId());
+        return ResponseEntity.ok(me);
+    }
+
     // PROFILE
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getMeProfile(@AuthenticationPrincipal User user) {

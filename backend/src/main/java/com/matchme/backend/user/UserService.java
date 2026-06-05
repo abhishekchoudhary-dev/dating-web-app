@@ -99,6 +99,27 @@ public class UserService {
         return userMapper.toResponse(user);
     }
 
+    public UserResponse deleteProfilePicture(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
+
+        if (user.getProfilePictureLink() == null) {
+            return userMapper.toResponse(user);
+        }
+
+        String filename = user.getProfilePictureLink().substring(user.getProfilePictureLink().lastIndexOf("/") + 1);
+
+        try {
+            fileStorage.deleteFile(filename);
+        } catch (IOException ex) {
+            throw new FileStorageException("profile picture deletion failed");
+        }
+
+        user.setProfilePictureLink(null);
+        userRepository.save(user);
+
+        return userMapper.toResponse(user);
+    }
+
     public boolean isProfileComplete(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
         UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("user profile not found for id: " + userId));
