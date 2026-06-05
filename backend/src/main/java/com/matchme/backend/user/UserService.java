@@ -3,11 +3,11 @@ package com.matchme.backend.user;
 import com.matchme.backend.exception.FileStorageException;
 import com.matchme.backend.exception.ResourceNotFoundException;
 import com.matchme.backend.user.bio.UserBio;
+import com.matchme.backend.user.bio.UserBioMapper;
 import com.matchme.backend.user.bio.UserBioRepository;
-import com.matchme.backend.user.dto.MeResponse;
-import com.matchme.backend.user.dto.UserRequest;
-import com.matchme.backend.user.dto.UserResponse;
+import com.matchme.backend.user.dto.*;
 import com.matchme.backend.user.profile.UserProfile;
+import com.matchme.backend.user.profile.UserProfileMapper;
 import com.matchme.backend.user.profile.UserProfileRepository;
 import com.matchme.backend.util.FileStorage;
 import jakarta.transaction.Transactional;
@@ -27,6 +27,9 @@ public class UserService {
     private final UserBioRepository userBioRepository;
     private final UserMapper userMapper;
     private final FileStorage fileStorage;
+    private final UserFullProfileMapper userFullProfileMapper;
+    private final UserProfileMapper userProfileMapper;
+    private final UserBioMapper userBioMapper;
 
     @Value("${app.backend.url}")
     private String backendUrl;
@@ -36,20 +39,39 @@ public class UserService {
         return userMapper.toMeResponse(user, isProfileComplete(userId));
     }
 
+    @Transactional
+    public UserFullProfileResponse putMe(Long userId, UserFullProfileRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
+        UserProfile profile = userProfileRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("profile not found for id: " + userId));
+        UserBio bio = userBioRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("bio not found for id: " + userId));
+
+        // User
+        user.setName(request.getUser().getName());
+
+        // Profile
+        profile.setAboutMe(request.getProfile().getAboutMe());
+
+        // Bio
+        bio.setAge(request.getBio().getAge());
+        bio.setGender(request.getBio().getGender());
+        bio.setInterests(request.getBio().getInterests());
+        bio.setLanguages(request.getBio().getLanguages());
+        bio.setLocation(request.getBio().getLocation());
+        bio.setPreferenceAgeMin(request.getBio().getPreferenceAgeMin());
+        bio.setPreferenceAgeMax(request.getBio().getPreferenceAgeMax());
+        bio.setPreferenceDistanceRadius(request.getBio().getPreferenceDistanceRadius());
+        bio.setPreferenceGender(request.getBio().getPreferenceGender());
+
+        return userFullProfileMapper.toResponse(
+                userMapper.toResponse(user),
+                userProfileMapper.toResponse(profile),
+                userBioMapper.toResponse(bio)
+        );
+    }
+
     public UserResponse get(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
         return userMapper.toResponse(user);
-    }
-
-    @Transactional
-    public UserResponse update(Long userId, UserRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
-
-        user.setName(request.getName());
-
-        User updated = userRepository.save(user);
-
-        return userMapper.toResponse(updated);
     }
 
     public UserResponse updateProfilePicture(Long userId, MultipartFile picture) {
