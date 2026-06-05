@@ -29,10 +29,12 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ApiError body = ApiError.of(
                 HttpStatus.UNAUTHORIZED.value(),
-                "Unauthorized",
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
                 "Authentication is required to access this resource",
+                null,
                 request.getRequestURI()
         );
+
         objectMapper.writeValue(response.getOutputStream(), body);
     }
 }
