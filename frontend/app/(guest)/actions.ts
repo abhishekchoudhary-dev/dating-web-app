@@ -14,7 +14,11 @@ export async function registerUser(form: any) {
     })
 
     if (!response.ok) {
-        return { error: 'Registration failed' }
+        const apiError = await response.json()
+        return {
+            message: apiError.message,
+            errors: apiError.errors ?? {}
+        }
     }
 
     await setResponseCookies(response.headers.getSetCookie());
