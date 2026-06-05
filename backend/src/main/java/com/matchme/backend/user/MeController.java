@@ -1,14 +1,10 @@
 package com.matchme.backend.user;
 
 import com.matchme.backend.user.bio.UserBioService;
-import com.matchme.backend.user.bio.dto.UserBioRequest;
 import com.matchme.backend.user.bio.dto.UserBioResponse;
 import com.matchme.backend.user.bio.enums.UserBioOption;
-import com.matchme.backend.user.dto.MeResponse;
-import com.matchme.backend.user.dto.UserRequest;
-import com.matchme.backend.user.dto.UserResponse;
+import com.matchme.backend.user.dto.*;
 import com.matchme.backend.user.profile.UserProfileService;
-import com.matchme.backend.user.profile.dto.UserProfileRequest;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +31,10 @@ public class MeController {
         return ResponseEntity.ok(me);
     }
 
-    @PatchMapping
-    public ResponseEntity<UserResponse> updateMe(@AuthenticationPrincipal User user, @Valid @RequestBody UserRequest request) {
-        UserResponse me = userService.update(user.getId(), request);
-        return ResponseEntity.ok(me);
+    @PutMapping
+    public ResponseEntity<UserFullProfileResponse> putMe(@AuthenticationPrincipal User user, @Valid @RequestBody UserFullProfileRequest request) {
+        UserFullProfileResponse profile = userService.putMe(user.getId(), request);
+        return ResponseEntity.ok(profile);
     }
 
     @PutMapping(value = "/profile-picture", consumes = "multipart/form-data")
@@ -47,13 +43,13 @@ public class MeController {
         return ResponseEntity.ok(me);
     }
 
-    // PROFILE
-    @PutMapping("/profile")
-    public ResponseEntity<UserProfileResponse> updateMeProfile(@AuthenticationPrincipal User user, @Valid @RequestBody UserProfileRequest request) {
-        UserProfileResponse profile = userProfileService.update(user.getId(), request);
-        return ResponseEntity.ok(profile);
+    @DeleteMapping(value = "/profile-picture")
+    public ResponseEntity<UserResponse> deleteMeProfilePicture(@AuthenticationPrincipal User user) {
+        UserResponse me = userService.deleteProfilePicture(user.getId());
+        return ResponseEntity.ok(me);
     }
 
+    // PROFILE
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getMeProfile(@AuthenticationPrincipal User user) {
         UserProfileResponse profile = userProfileService.get(user.getId());
@@ -61,12 +57,6 @@ public class MeController {
     }
 
     // BIO
-    @PutMapping("/bio")
-    public ResponseEntity<UserBioResponse> updateMeBio(@AuthenticationPrincipal User user, @Valid @RequestBody UserBioRequest request) {
-        UserBioResponse bio = userBioService.update(user.getId(), request);
-        return ResponseEntity.ok(bio);
-    }
-
     @GetMapping("/bio")
     public ResponseEntity<UserBioResponse> getMeBio(@AuthenticationPrincipal User user) {
         UserBioResponse bio = userBioService.get(user.getId());

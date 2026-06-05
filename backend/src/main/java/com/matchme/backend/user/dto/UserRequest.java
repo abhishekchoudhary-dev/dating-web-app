@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class UserRequest {
-    @Size(max = 100, message = "length cannot exceed 100 characters")
+    @Size(min = 2, max = 100)
     @NotNull(message = "enter name")
     private String name;
 }
