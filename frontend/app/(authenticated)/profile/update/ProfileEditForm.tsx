@@ -1,6 +1,5 @@
 "use client"
 
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +37,7 @@ import React, { useRef, useState } from "react";
 import { ImageIcon, PencilIcon, UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { toast } from "sonner";
 
 type ProfileEditFormProps = {
     options: Options
@@ -79,10 +79,11 @@ export default function ProfileEditForm({ options, data, redirectTo }: ProfileEd
             });
         } else if (response?.message) {
             setError('root', { message: response.message });
+        } else {
+            toast("Profile updated", { position: "top-center" })
+            router.refresh();
+            if (redirectTo) router.push(redirectTo)
         }
-
-        router.refresh();
-        if (redirectTo) router.push(redirectTo)
     }
 
     return (
@@ -195,7 +196,7 @@ export default function ProfileEditForm({ options, data, redirectTo }: ProfileEd
                         render={({ field, fieldState }) => (
                             <Field data-invalid={fieldState.invalid}>
                                 <FieldLabel htmlFor="gender">Gender</FieldLabel>
-                                <Select value={field.value} onValueChange={field.onChange} >
+                                <Select value={field.value ?? ''} onValueChange={field.onChange} >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Gender" />
                                     </SelectTrigger>
@@ -354,7 +355,7 @@ export default function ProfileEditForm({ options, data, redirectTo }: ProfileEd
                                 <FieldLabel htmlFor="preferenceGender">Gender preference</FieldLabel>
                                 <Select
                                     aria-invalid={fieldState.invalid}
-                                    value={field.value}
+                                    value={field.value ?? ''}
                                     onValueChange={field.onChange}
                                 >
                                     <SelectTrigger className="w-full">
