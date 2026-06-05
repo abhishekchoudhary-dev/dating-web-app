@@ -29,10 +29,12 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
         ApiError body = ApiError.of(
                 HttpStatus.FORBIDDEN.value(),
-                "Forbidden",
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
                 "You do not have permission to access this resource",
+                null,
                 request.getRequestURI()
         );
+
         objectMapper.writeValue(response.getOutputStream(), body);
     }
 }
