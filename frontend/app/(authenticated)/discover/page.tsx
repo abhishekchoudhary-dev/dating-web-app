@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import React from "react";
+import { getRecommendations, getUserData } from "./data";
+import DiscoverClient from "./discoverclient";
 
 export const metadata: Metadata = {
     title: 'Discover',
 }
 
-export default function Discover() {
-    return (
-        <>
-            <p>Discover content</p>
-        </>
-    );
+export default async function Discover() {
+    const recommendations = await getRecommendations();
+    const users = await Promise.all(recommendations.map((id: number) => getUserData(id)));
+
+    return <DiscoverClient users={users} />;
 }

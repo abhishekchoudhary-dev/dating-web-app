@@ -24,7 +24,7 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
 
                     <PageTitle />
                 </header>
-                <div className="flex justify-center p-4 mx-auto max-w-4xl w-full">
+                <div className="flex justify-center p-2 mx-auto max-w-4xl w-full">
                     { children }
                 </div>
             </SidebarInset>
