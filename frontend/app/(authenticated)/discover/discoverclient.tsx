@@ -55,8 +55,8 @@ export default function discoverclient({ users }: Props) {
         <div className="flex flex-col items-center justify-center w-full max-w-sm mx-auto gap-6">
             <Card className="w-full max-h-[85vh] overflow-hidden shadow-lg">
                 <div className="relative">
-                    <div className="h-50 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                        <Avatar className="size-40 border-4 border-background shadow-md">
+                    <div className="h-50 bg-white from-primary/20 to-primary/5 flex items-center justify-center">
+                        <Avatar className="size-50 border-4 border-background shadow-md">
                             <AvatarImage src={currentUser.profilePictureLink ?? ''} alt={currentUser.name} />
                              <AvatarFallback className="text-4xl">
                                 <UserIcon size={50} />
