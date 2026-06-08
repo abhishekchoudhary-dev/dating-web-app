@@ -43,4 +43,8 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
+
+    public boolean isComplete() {
+        return name != null;
+    }
 }

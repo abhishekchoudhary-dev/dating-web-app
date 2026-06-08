@@ -36,14 +36,17 @@ public class UserService {
 
     public MeResponse getMe(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
-        return userMapper.toMeResponse(user, isProfileComplete(userId));
+        UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("profile not found for id: " + userId));
+        UserBio bio = userBioRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("bio not found for id: " + userId));
+
+        return userMapper.toMeResponse(user, isProfileComplete(user, profile, bio));
     }
 
     @Transactional
     public UserFullProfileResponse putMe(Long userId, UserFullProfileRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
-        UserProfile profile = userProfileRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("profile not found for id: " + userId));
-        UserBio bio = userBioRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("bio not found for id: " + userId));
+        UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("profile not found for id: " + userId));
+        UserBio bio = userBioRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("bio not found for id: " + userId));
 
         // User
         user.setName(request.getUser().getName());
@@ -120,11 +123,7 @@ public class UserService {
         return userMapper.toResponse(user);
     }
 
-    public boolean isProfileComplete(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
-        UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("user profile not found for id: " + userId));
-        UserBio bio = userBioRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("user bio not found for id: " + userId));
-
-        return user.getName() != null && bio.isComplete() && profile.isComplete();
+    public boolean isProfileComplete(User user, UserProfile profile, UserBio bio) {
+        return user.isComplete() && bio.isComplete() && profile.isComplete();
     }
 }
