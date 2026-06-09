@@ -19,9 +19,9 @@ public class RecommendationController {
     private final RecommendationService recommendationService;
 
     @GetMapping("/recommendations")
-    public ResponseEntity<List<RecommendationResponse>> getRecommendations(
+    public ResponseEntity<List<Long>> getRecommendations(
             @AuthenticationPrincipal User user) {
-        List<RecommendationResponse> recommendations = recommendationService.getRecommendations(user);
+        List<Long> recommendations = recommendationService.getRecommendations(user);
         return ResponseEntity.ok(recommendations);
     }
 }

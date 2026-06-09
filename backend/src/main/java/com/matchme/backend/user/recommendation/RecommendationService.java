@@ -23,7 +23,7 @@ public class RecommendationService {
 
     private static final int MAX_RECOMMENDATIONS = 10;
 
-    public List<RecommendationResponse> getRecommendations(User currentUser) {
+    public List<Long> getRecommendations(User currentUser) {
 
         // TODO use isProfileComplete instead
         UserBio currentBio = userBioRepository.findByUserId(currentUser.getId())
@@ -48,9 +48,7 @@ public class RecommendationService {
                 // Take max 10
                 .limit(MAX_RECOMMENDATIONS)
                 // Map to response
-                .map(sb-> RecommendationResponse.builder()
-                        .id(sb.bio.getUser().getId())
-                        .build())
+                .map(sb-> sb.bio.getUser().getId())        
                 .collect(Collectors.toList());
     }
 
