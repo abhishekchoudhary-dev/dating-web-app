@@ -6,7 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPinIcon, XIcon, HeartIcon, ImageIcon, UserIcon, PencilIcon } from "lucide-react";
-
+import { matchUser, dismissUser } from "./actions";
+import { set } from "react-hook-form";
 
 type User = {
     id: number
@@ -29,13 +30,21 @@ export default function discoverclient({ users }: Props) {
 
     const currentUser = users[currentIndex];
 
-    const handleMatch = () => {
-        // TODO — send connection request to backend
+    const [loading, setLoading] = useState(false);
+
+    const handleMatch = async() => {
+        //send MATCHED to backend to create connection
+        setLoading(true);
+        await matchUser(currentUser.id);
+        setLoading(false);
         setCurrentIndex(prev => prev + 1);
     }
 
-    const handleDismiss = () => {
-        // TODO — send dismiss to backend so user is never recommended again
+    const handleDismiss = async() => {
+        // send DISMISSED to backend so user is never recommended again
+        setLoading(true);
+        await dismissUser(currentUser.id);
+        setLoading(false);
         setCurrentIndex(prev => prev + 1);
     }
 
@@ -116,6 +125,7 @@ export default function discoverclient({ users }: Props) {
                     <div className="flex justify-between items-center mt-4 pb-0 pt-4 gap-3">
                         <Button
                             onClick={handleDismiss}
+                            disabled={loading}
                             variant="outline"
                             className="flex-1 py-5 text-base gap-2 border-destructive text-destructive hover: bg-transparent hover:text-destructive-foreground cursor-pointer gap-2">
                             <XIcon className="size-5" />
@@ -123,6 +133,7 @@ export default function discoverclient({ users }: Props) {
                         </Button>
                         <Button
                             onClick={handleMatch}
+                            disabled={loading}
                             className="flex-1 py-5 text-base gap-2 cursor-pointer hover:bg-primary hover:opacity-90">
                             <HeartIcon className="size-5" />
                             Match

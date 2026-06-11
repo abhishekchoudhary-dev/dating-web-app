@@ -4,6 +4,8 @@ import com.matchme.backend.exception.ResourceNotFoundException;
 import com.matchme.backend.user.User;
 import com.matchme.backend.user.UserRepository;
 import com.matchme.backend.user.bio.enums.GenderPreference;
+import com.matchme.backend.user.connection.ConnectionRepository;
+import com.matchme.backend.user.connection.ConnectionService;   
 import com.matchme.backend.user.bio.UserBio;
 import com.matchme.backend.user.bio.UserBioRepository;
 import com.matchme.backend.user.recommendation.dto.RecommendationResponse;
@@ -20,6 +22,7 @@ public class RecommendationService {
 
     private final ScoreCalculator scoreCalculator;
     private final UserBioRepository userBioRepository;
+    private final ConnectionService connectionService;
 
     private static final int MAX_RECOMMENDATIONS = 10;
 
@@ -29,10 +32,19 @@ public class RecommendationService {
         UserBio currentBio = userBioRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Complete your bio first"));
 
+
+        // Get excluded user IDs
+        List<Long> excludedIds = connectionService.getExcludedUserIds(currentUser);
+
         // Get all profiles except current user
+        //List<UserBio> candidates = userBioRepository.findAll().stream()
+        //        .filter(b -> !b.getUser().getId().equals(currentUser.getId()))
+        //        .toList();
+        //get all profiles expect current user and excluded user based on criteria
         List<UserBio> candidates = userBioRepository.findAll().stream()
-                .filter(b -> !b.getUser().getId().equals(currentUser.getId()))
-                .toList();
+            .filter(b -> !b.getUser().getId().equals(currentUser.getId()))
+            .filter(b -> !excludedIds.contains(b.getUser().getId()))
+            .toList();
 
         return candidates.stream()
                 // Filter 1 — gender preference
