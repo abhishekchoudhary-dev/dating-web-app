@@ -28,7 +28,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-import { Options } from "@/app/(authenticated)/profile/types";
+import { Options } from "@/app/(authenticated)/types";
 import { Controller, useForm } from "react-hook-form";
 import { updateProfile } from "@/app/(authenticated)/profile/update/actions";
 import { ProfileEditFormFields } from "@/app/(authenticated)/profile/update/types";
