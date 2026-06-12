@@ -1,4 +1,4 @@
-import { Option } from "@/app/(authenticated)/profile/types";
+import { Option } from "@/app/(authenticated)/types";
 
 export type ProfileEditFormFields = {
     name: string
