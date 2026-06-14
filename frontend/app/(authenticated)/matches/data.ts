@@ -16,9 +16,10 @@ export async function getMatches() {
     const ids: number[] = await fetchWithAuth('http://localhost:8080/api/connections') ?? [];
     
     const users = await Promise.all(ids.map(async (id) => {
-        const [user, bio] = await Promise.all([
+        const [user, bio, unread] = await Promise.all([
             fetchWithAuth(`http://localhost:8080/api/users/${id}`),
             fetchWithAuth(`http://localhost:8080/api/users/${id}/bio`),
+            fetchWithAuth(`http://localhost:8080/api/messages/${id}/unread`)
         ]);
 
         return {
@@ -29,6 +30,7 @@ export async function getMatches() {
             location: bio?.location ?? null,
             interests: bio?.interests ?? [],
             languages: bio?.languages ?? [],
+            unreadCount: unread ?? 0,
         };
     }));
 

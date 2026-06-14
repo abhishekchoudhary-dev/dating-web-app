@@ -16,6 +16,7 @@ public class UserMapper {
 
     public MeResponse toMeResponse(User user, Boolean profileComplete) {
         return MeResponse.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .profileLink(user.getProfileLink())

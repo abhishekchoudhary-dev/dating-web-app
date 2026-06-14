@@ -3,6 +3,7 @@ import { getMatches } from "./data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MapPinIcon, HeartIcon, UserIcon, MessageCircleIcon, UserCircleIcon } from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: 'Matches',
@@ -57,10 +58,17 @@ export default async function Matches() {
                                 <UserCircleIcon className="size-4" />
                                 View Full Profile
                             </Button>
-                            <Button size="sm" className="gap-1 cursor-pointer py-5 mr-2 px-4 bg-pink-500 hover:bg-pink-600 text-white">
-                                <MessageCircleIcon className="size-4" />
-                                Chat
-                            </Button>
+                            <Link href ={`/chat/${match.id}`}>
+                                <Button size="sm" className="relative gap-1 cursor-pointer py-5 mr-2 px-4 bg-pink-500 hover:bg-pink-600 text-white">
+                                    <MessageCircleIcon className="size-4" />
+                                    Chat
+                                    {match.unreadCount > 0 && (
+                                        <span className="absolute -top-3 -right-3 bg-red-500 text-white shadow-md text-xs rounded-full size-7 flex items-center justify-center">
+                                            {match.unreadCount} 
+                                        </span>
+                                    )}
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 ))}
