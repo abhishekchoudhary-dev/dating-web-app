@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     public UserResponse toResponse(User user) {
         return UserResponse.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .profileLink(user.getProfileLink())
                 .profilePictureLink(user.getProfilePictureLink())

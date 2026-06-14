@@ -5,27 +5,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPinIcon, XIcon, HeartIcon, ImageIcon, UserIcon, PencilIcon } from "lucide-react";
+import { MapPinIcon, XIcon, HeartIcon, UserIcon } from "lucide-react";
 import { matchUser, dismissUser } from "./actions";
-import { set } from "react-hook-form";
+import { RecommendedUser } from "@/app/(authenticated)/discover/types";
 
-type User = {
-    id: number
-    name: string
-    profilePictureLink: string | null
-    age: number | null
-    gender: string | null
-    location: string | null
-    aboutMe: string | null
-    interests: { name: string, displayName: string, emoji: string }[]
-    languages: { name: string, displayName: string, emoji: string }[]
+type DiscoverClientProps = {
+    users: RecommendedUser[]
 }
 
-type Props = {
-    users: User[]
-}
-
-export default function discoverclient({ users }: Props) {
+export default function DiscoverClient({ users }: DiscoverClientProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const currentUser = users[currentIndex];

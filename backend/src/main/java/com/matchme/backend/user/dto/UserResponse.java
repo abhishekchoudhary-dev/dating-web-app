@@ -6,6 +6,7 @@ import lombok.Value;
 @Value
 @Builder
 public class UserResponse {
+    Long id;
     String name;
     String profileLink;
     String profilePictureLink;

@@ -6,7 +6,7 @@ import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { HeartIcon, CompassIcon, UserIcon } from "lucide-react"
-import { MeResponse } from "@/app/(authenticated)/types";
+import { Me } from "@/app/(authenticated)/types";
 
 const data = {
   navMain: [
@@ -29,7 +29,7 @@ const data = {
 }
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-  user: MeResponse
+  user: Me
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {

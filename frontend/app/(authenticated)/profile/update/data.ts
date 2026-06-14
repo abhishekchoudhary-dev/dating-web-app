@@ -1,44 +1,32 @@
-import { cookies } from "next/headers";
-import { UserBioResponse, UserProfileResponse, UserResponse } from "@/app/(authenticated)/profile/update/types";
+import { MeBio, MeProfile, Me, Options, FullMe } from "@/app/(authenticated)/types";
+import { fetchWithAuth } from "@/app/(authenticated)/actions";
 
-export async function getOptions() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('access_token')?.value;
-
-    const response = await fetch(`http://localhost:8080/api/me/bio/options`, {
+export async function getOptions(): Promise<Options> {
+    const response = await fetchWithAuth<Options>(`http://localhost:8080/api/me/bio/options`, {
         method: 'GET',
-        headers: { Cookie: `access_token=${token}` }
     })
 
-    return response.json();
+    return response.data;
 }
 
-export async function getAuthenticatedUserData() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('access_token')?.value;
-
-    const [meRes, profileRes, bioRes] = await Promise.all([
-        fetch(`http://localhost:8080/api/me`, {
-            method: 'GET',
-            headers: { Cookie: `access_token=${token}` },
+export async function getAuthenticatedUserData(): Promise<FullMe> {
+    const [
+        { data: me },
+        { data: profile },
+        { data: bio }
+    ] = await Promise.all([
+        fetchWithAuth<Me>(`http://localhost:8080/api/me`, {
+            cache: 'no-store'
         }),
-        fetch(`http://localhost:8080/api/me/profile`, {
-            method: 'GET',
-            headers: { Cookie: `access_token=${token}` },
+        fetchWithAuth<MeBio>(`http://localhost:8080/api/me/profile`, {
+            cache: 'no-store'
         }),
-        fetch(`http://localhost:8080/api/me/bio`, {
-            method: 'GET',
-            headers: { Cookie: `access_token=${token}` },
+        fetchWithAuth<MeProfile>(`http://localhost:8080/api/me/bio`, {
+            cache: 'no-store'
         }),
-    ])
+    ]);
 
-    const data: UserResponse & UserProfileResponse & UserBioResponse = {
-        ...await meRes.json(),
-        ...await profileRes.json(),
-        ...await bioRes.json(),
-    }
-
-    return data;
+    return { ...me, ...profile, ...bio};
 }
 
 export async function getProfileEditFormData() {

@@ -1,4 +1,4 @@
-import { Options } from "@/app/(authenticated)/profile/types";
+import { Options } from "@/app/(authenticated)/types";
 import { getOptions, getProfileEditFormData } from "@/app/(authenticated)/profile/update/data";
 import ProfileEditForm from "@/app/(authenticated)/profile/update/ProfileEditForm";
 import LogOutButton from "@/app/(onboarding)/onboarding/LogOutButton";

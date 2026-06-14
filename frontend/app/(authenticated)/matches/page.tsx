@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getMatches } from "./data";
+import { getMatchedUsers } from "./data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MapPinIcon, HeartIcon, UserIcon, MessageCircleIcon, UserCircleIcon } from "lucide-react";
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Matches() {
-    const matches = await getMatches();
+    const matches = await getMatchedUsers();
 
     if (matches.length === 0) {
         return (
