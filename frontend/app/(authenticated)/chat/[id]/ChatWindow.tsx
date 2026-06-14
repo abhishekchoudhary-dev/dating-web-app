@@ -41,16 +41,10 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        // Get current user id from /api/me
-        //fetch('http://localhost:8080/api/me', {
-         //   headers: { Cookie: `access_token=${token}` }
-        //})
-        //.then(r => r.json())
-        //.then(me => setCurrentUserId(me.id));
 
         let active = true;
 
-        // Connect WebSocket using dynamic import
+        // Connect WebSocket
         let client: Client;
 
         import('sockjs-client').then(({ default: SockJS }) => {
@@ -68,50 +62,40 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
                         const message = JSON.parse(frame.body);
                         console.log('Received main message:', frame.body);
                         setMessages(prev => [...prev, message]);
+
+                        // Mark as read immediately if user is in window already
+                        fetch(`http://localhost:8080/api/messages/${otherUser.id}/read`, {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
                     });
 
-                    
-                    //client.subscribe('/user/**', (frame) => {
-                    //    console.log('Any message destination:', frame.headers['destination']);
-                    //    console.log('Any message body:', frame.body);
-                    //});
-                    //client.subscribe('/user/**/queue/**', (frame) => {
-                    //   console.log('Wildcard destination:', frame.headers['destination']);
-                    //    console.log('Wildcard body:', frame.body);
-                    //});
-                    
-
+                    //typing indicator
                     client.subscribe(`/user/${currentUserId}/queue/typing`, (frame) => {
                         const event = JSON.parse(frame.body);
-                        console.log('Typing event received:', frame.body);
                         if (String(event.senderId) === String(otherUser.id)) {
                             setIsTyping(event.typing);
                         }
                     });
-                    console.log('currentUserId at subscription time:', currentUserId, typeof currentUserId);
-                    const sub = client.subscribe(`/user/${currentUserId}/queue/typing`, (frame) => {
-                        console.log('Typing received:', frame.body);
-                    });
-                    console.log('Subscribed to typing:', sub.id);
+                   
 
+                    //broadcast online status of other user
                     client.subscribe('/topic/status', (frame) => {
                         const event = JSON.parse(frame.body);
                         if (event.userId === otherUser.id) {
                             setIsOnline(event.online);
                         }
                     });
-                    //subscribe to direct status responses
+
+                    //Direct response to online status
                     client.subscribe(`/user/${currentUserEmail}/queue/status`, (frame) => {
                         const event = JSON.parse(frame.body);
                         if (event.userId === otherUser.id) {
                             setIsOnline(event.online);
                         }
                     });
-                    // Request current status of other user after connecting
-                    //client.publish({
-                    //    destination: '/app/status/request',
-                    //    body: JSON.stringify({ userId: otherUser.id })
-                    //});
+                   
+                    //requesting current online status
                     setTimeout(() => {
                         client.publish({
                             destination: '/app/status/request',

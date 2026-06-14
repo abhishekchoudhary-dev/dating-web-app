@@ -58,8 +58,17 @@ public class MessageService {
                 response
         );
 
+        //send updated unread count to the sender
+        messagingTemplate.convertAndSendToUser(
+                managedReceiver.getEmail(),
+                "/queue/unread",
+                Map.of("senderId", managedSender.getId(), "count", 
+                messageRepository.countUnreadFrom(managedSender, managedReceiver)) 
+        );
+        
         return response;
     }
+
 
     public void sendTypingEvent(User sender, TypingEvent event) {
         event.setSenderId(sender.getId());
