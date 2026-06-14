@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { getRecommendations, getUserData } from "./data";
-import DiscoverClient from "./discoverclient";
+import { getRecommendedUsers, getRecommendedUsersIds } from "./data";
+import DiscoverClient from "./DiscoverClient";
+import { RecommendedUser } from "@/app/(authenticated)/discover/types";
 
 export const metadata: Metadata = {
     title: 'Discover',
 }
 
 export default async function Discover() {
-    const recommendations = await getRecommendations();
-    const users = await Promise.all(recommendations.map((id: number) => getUserData(id)));
+    const recommendedUsersIds: number[] = await getRecommendedUsersIds();
+    const recommendedUsers: RecommendedUser[] = await getRecommendedUsers(recommendedUsersIds);
 
-    return <DiscoverClient users={users} />;
+    return <DiscoverClient users={recommendedUsers} />;
 }

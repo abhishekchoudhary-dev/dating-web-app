@@ -1,33 +1,38 @@
-import { cookies } from "next/headers";
+import { fetchWithAuth } from "@/app/(authenticated)/actions";
+import { UserBio, UserProfile, User } from "@/app/(authenticated)/types";
+import { RecommendedUser } from "@/app/(authenticated)/discover/types";
 
-async function fetchWithAuth(url: string) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('access_token')?.value;
-    const response = await fetch(url, {
+export async function getRecommendedUsersIds(): Promise<number[]> {
+    const response = await fetchWithAuth<number[]>('http://localhost:8080/api/recommendations', {
         method: 'GET',
-        headers: { Cookie: `access_token=${token}` },
         cache: 'no-store'
     });
-    if (!response.ok) return null;
-    return response.json();
+
+    return response.data;
 }
 
-export async function getRecommendations(): Promise<number[]> {
-    const data = await fetchWithAuth('http://localhost:8080/api/recommendations');
-    return data ?? [];
+export async function getRecommendedUsers(ids: number[]): Promise<RecommendedUser[]> {
+    return await Promise.all(
+        ids.map((id: number) => getRecommendedUserData(id))
+    );
 }
 
-export async function getUserData(id: number) {
-    const [user, bio, profile] = await Promise.all([
-        fetchWithAuth(`http://localhost:8080/api/users/${id}`),
-        fetchWithAuth(`http://localhost:8080/api/users/${id}/bio`),
-        fetchWithAuth(`http://localhost:8080/api/users/${id}/profile`),
+export async function getRecommendedUserData(id: number): Promise<RecommendedUser> {
+    const [
+        { data: user },
+        { data: bio },
+        { data: profile }
+    ] = await Promise.all([
+        fetchWithAuth<User>(`http://localhost:8080/api/users/${id}`, {
+            cache: 'no-store'
+        }),
+        fetchWithAuth<UserBio>(`http://localhost:8080/api/users/${id}/bio`, {
+            cache: 'no-store'
+        }),
+        fetchWithAuth<UserProfile>(`http://localhost:8080/api/users/${id}/profile`, {
+            cache: 'no-store'
+        }),
     ]);
-
-
-    console.log('USER:', JSON.stringify(user));
-    console.log('BIO:', JSON.stringify(bio));
-    console.log('PROFILE:', JSON.stringify(profile));
 
     return {
         id,

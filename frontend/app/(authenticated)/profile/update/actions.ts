@@ -7,8 +7,6 @@ export async function updateProfile(data: ProfileEditFormFields) {
     const cookieStore = await cookies();
     const token = cookieStore.get('access_token')?.value;
 
-    console.log(data)
-
     if (data.profilePictureFile) {
         const formData = new FormData();
         formData.append("file", data.profilePictureFile);

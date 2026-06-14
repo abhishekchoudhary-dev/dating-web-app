@@ -6,6 +6,7 @@ import lombok.Value;
 @Value
 @Builder
 public class MeResponse {
+    Long id;
     String name;
     String email;
     String profileLink;
