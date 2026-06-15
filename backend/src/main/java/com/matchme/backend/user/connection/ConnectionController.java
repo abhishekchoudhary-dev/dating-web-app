@@ -22,6 +22,7 @@ public class ConnectionController {
         return ResponseEntity.ok(connectionService.getConnections(user));
     }
 
+    //to match with user
     @PostMapping("/{id}/match")
     public ResponseEntity<ConnectionStatus> match(
             @AuthenticationPrincipal User user,
@@ -29,10 +30,22 @@ public class ConnectionController {
         return ResponseEntity.ok(connectionService.match(user, id));
     }
 
+    //to dismiss a discovery to not have them recommended again
     @PostMapping("/{id}/dismiss")
     public ResponseEntity<ConnectionStatus> dismiss(
             @AuthenticationPrincipal User user,
             @PathVariable Long id) {
         return ResponseEntity.ok(connectionService.dismiss(user, id));
     }
+
+    //to unmatch with someone who is matched currently 
+    @DeleteMapping("/{id}/unmatch")
+    public ResponseEntity<Void> unmatch(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id){
+            connectionService.unmatch(user,id);
+            return ResponseEntity.noContent().build(); //because we deleted so 204 code
+
+        }
+    
 }

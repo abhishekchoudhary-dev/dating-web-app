@@ -116,7 +116,7 @@ public class ConnectionService {
                 .collect(Collectors.toList());
     }
 
-    // Get IDs to exclude from recommendations
+    // Get IDs to exclude from recommendations - tricky part - discuss?
     public List<Long> getExcludedUserIds(User currentUser) {
         // Exclude where current user is requester + DISMISSED or PENDING or MATCHED
         List<Connection> asRequester = connectionRepository
@@ -126,18 +126,53 @@ public class ConnectionService {
         asRequester.addAll(connectionRepository
                 .findByRequesterAndStatus(currentUser, ConnectionStatus.MATCHED));
 
-        // Exclude where current user is receiver + MATCHED
-        List<Connection> asReceiverMatched = connectionRepository
-                .findByReceiverAndStatus(currentUser, ConnectionStatus.MATCHED);
+        // Exclude where current user is receiver + MATCHED or DISMISSED
+        List<Connection> asReceiver = connectionRepository
+            .findByReceiverAndStatus(currentUser, ConnectionStatus.MATCHED);
+        asReceiver.addAll(connectionRepository
+            .findByReceiverAndStatus(currentUser, ConnectionStatus.DISMISSED));
 
         List<Long> excluded = asRequester.stream()
                 .map(c -> c.getReceiver().getId())
                 .collect(Collectors.toList());
 
-        asReceiverMatched.stream()
+        asReceiver.stream()
                 .map(c -> c.getRequester().getId())
                 .forEach(excluded::add);
 
         return excluded;
     }
+
+    //unmatch a user who was currently matched
+    @Transactional
+    public void unmatch(User currentUser, Long targetUserId) {
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Find existing connection in both directions
+        Optional<Connection> connection = connectionRepository
+                .findByRequesterAndReceiver(currentUser, targetUser);
+        
+        if (connection.isPresent()) {
+                // Current user is already requester - just set to DISMISSED
+                connection.get().setStatus(ConnectionStatus.DISMISSED);
+                connectionRepository.save(connection.get());
+        } else {
+                connection = connectionRepository
+                        .findByRequesterAndReceiver(targetUser, currentUser);
+                
+                if (connection.isPresent()) {
+                // Current user is receiver - delete old connection and create new one
+                // with currentUser as requester so exclusion logic works correctly
+                connectionRepository.delete(connection.get());
+                Connection newConnection = Connection.builder()
+                        .requester(currentUser)
+                        .receiver(targetUser)
+                        .status(ConnectionStatus.DISMISSED)
+                        .build();
+                connectionRepository.save(newConnection);
+                }
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getUserData } from "@/app/(authenticated)/profile/[[...userId]]/data";
+import { unmatchUser } from "@/app/(authenticated)/matches/actions";
 
 export const metadata: Metadata = {
     title: 'Profile',
@@ -32,7 +33,7 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
     }
 
     return (
-        <div className="space-y-7 w-full">
+        <div className="space-y-5 w-full">
             <div className="flex justify-center">
                 <Avatar className="size-42">
                     <AvatarImage src={user.profilePictureLink} alt="Profile photo" />
@@ -40,6 +41,9 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
                         <UserIcon size={50}/>
                     </AvatarFallback>
                 </Avatar>
+            </div>
+            <div className = "flex font-bold items-center justify-center w-full text-2xl">
+                {user.name}
             </div>
 
             <div className="flex items-center justify-center gap-2">
@@ -52,24 +56,30 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
                     </Link>
                 ) : (
                     <>
-                        <Link href="#">
-                            <Button>
+                        <Link href={`/chat/${userId[0]}`}>
+                            <Button className="cursor-pointer py-5 px-10 bg-pink-500 hover:bg-pink-600 text-white">
                                 <MessageCircleIcon size={15} />
                                 Chat
                             </Button>
                         </Link>
-                        <Button variant="outline">
+                        <form action={unmatchUser.bind(null, Number(userId[0]))}>
+                            <Button className="cursor-pointer py-5 px-10" variant="outline" type="submit">
+                                <UserX size={15} />
+                                Unmatch
+                            </Button>
+                        </form>
+                        {/*<Button variant="outline">
                             <UserX size={15} />
                             Unmatch
-                        </Button>
+                        </Button>*/}
                     </>
                 )}
             </div>
 
+            <p className="text-m font-medium text-muted-foreground uppercase tracking-wide mb-1">Profile Details</p>
             <Separator />
-
             <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Name</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Full Name</p>
                 <p className="text-base font-medium ">{user.name}</p>
             </div>
 
@@ -94,7 +104,7 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
             </div>
 
             <div>
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Languages</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Languages</p>
                 <div className="flex flex-wrap gap-2">
                     {user.languages.map((lang) => (
                         <Badge variant="outline" className="p-4 text-sm" key={lang.name}>
@@ -105,7 +115,7 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
             </div>
 
             <div>
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Interests</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Interests</p>
                 <div className="flex flex-wrap gap-2">
                     {user.interests.map((interest) => (
                         <Badge variant="outline" className="p-4 text-sm" key={interest.name}>
