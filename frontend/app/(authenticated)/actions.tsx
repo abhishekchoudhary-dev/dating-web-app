@@ -14,10 +14,14 @@ export async function fetchWithAuth<T>(url: string, options?: RequestInit): Prom
         ...options
     });
 
+    //handle empty response upon unmatch 
+    const text = await response.text();
+    const data = text ? JSON.parse(text) as T : null as T;
+    
     return {
         status: response.status,
         ok: response.ok,
-        data: await response.json() as T,
+        data,
     };
 }
 

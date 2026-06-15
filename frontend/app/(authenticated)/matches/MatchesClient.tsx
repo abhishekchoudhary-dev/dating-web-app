@@ -60,10 +60,12 @@ export default function MatchesClient({ initialMatches, token, currentUserEmail 
                             </div>
 
                             <div className="flex items-center gap-2 shrink-0">
+                                <Link href={`/profile/${match.id}`}>
                                 <Button variant="outline" size="sm" className="gap-1 mr-2 py-5 px-4 cursor-pointer">
                                     <UserCircleIcon className="size-4" />
                                     View Full Profile
                                 </Button>
+                                </Link>
                                 <Link href={`/chat/${match.id}`}>
                                     <Button size="sm" className="relative gap-1 cursor-pointer py-5 mr-2 px-4 bg-pink-500 hover:bg-pink-600 text-white">
                                         <MessageCircleIcon className="size-4" />
