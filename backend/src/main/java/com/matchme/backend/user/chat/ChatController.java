@@ -1,0 +1,89 @@
+package com.matchme.backend.user.chat;
+
+import com.matchme.backend.user.User;
+import com.matchme.backend.user.UserRepository;
+import com.matchme.backend.user.chat.dto.MessageRequest;
+import com.matchme.backend.user.chat.dto.MessageResponse;
+import com.matchme.backend.user.chat.dto.StatusEvent;
+import com.matchme.backend.user.chat.dto.TypingEvent;
+import com.matchme.backend.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.security.Principal;
+import java.util.*;
+
+@RestController
+@RequiredArgsConstructor
+public class ChatController {
+
+    private final MessageService messageService;
+    private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    // REST — load message history
+    @GetMapping("/api/messages/{userId}")
+    public ResponseEntity<List<MessageResponse>> getConversation(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long userId) {
+        return ResponseEntity.ok(messageService.getConversation(user, userId));
+    }
+
+    //endpoint to get unread message count
+    @GetMapping("/api/messages/{userId}/unread")
+    public ResponseEntity<Long> getUnreadCount(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long userId) {
+        return ResponseEntity.ok(messageService.getUnreadCount(user, userId));
+    }
+
+    //endpoint to mark messages as read
+    @PostMapping("/api/messages/{userId}/read")
+    public ResponseEntity<Void> markAsRead(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long userId) {
+        messageService.markAsRead(user, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    // WebSocket — send message
+    @MessageMapping("/chat")
+    public void sendMessage(
+            Principal principal,
+            @Payload MessageRequest request) {
+        User user = userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        messageService.sendMessage(user, request);
+    }
+
+    // WebSocket — typing indicator
+    @MessageMapping("/typing")
+    public void typing(
+            Principal principal,
+            @Payload TypingEvent event) {
+        User user = userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        messageService.sendTypingEvent(user, event);
+    }
+
+    @MessageMapping("/status/request")
+    public void requestStatus(Principal principal, @Payload Map<String, Long> request) {
+        Long userId = request.get("userId");
+        boolean online = messageService.isOnline(userId);
+        
+        StatusEvent event = new StatusEvent();
+        event.setUserId(userId);
+        event.setOnline(online);
+        
+        messagingTemplate.convertAndSendToUser(
+            principal.getName(),
+            "/queue/status",
+            event
+        );
+    }
+}
