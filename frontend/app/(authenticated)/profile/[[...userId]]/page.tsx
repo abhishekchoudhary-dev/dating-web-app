@@ -1,19 +1,35 @@
 import type { Metadata } from "next";
 import React from "react";
 import { getAuthenticatedUserData } from "@/app/(authenticated)/profile/update/data";
-import { MessageCircle, PencilIcon, UserIcon, UserMinus, UserMinusIcon, UserPlus } from "lucide-react";
+import { MessageCircleIcon, PencilIcon, UserIcon, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import { getUserData } from "@/app/(authenticated)/profile/[[...userId]]/data";
 
 export const metadata: Metadata = {
-    title: 'My profile',
+    title: 'Profile',
 }
 
-export default async function Profile() {
-    const user = await getAuthenticatedUserData();
+export default async function Profile(props: PageProps<'/profile/[[...userId]]'>) {
+    const { userId } = await props.params;
+    let user;
+    let isMeProfile = false;
+
+    if (userId) {
+        user = await getUserData(userId[0])
+    } else {
+        user = await getAuthenticatedUserData();
+        isMeProfile = true;
+    }
+
+    if (!user) {
+        return (
+            <span className="flex gap-2"><UserX /> User not found</span>
+        );
+    }
 
     return (
         <div className="space-y-7 w-full">
@@ -26,13 +42,28 @@ export default async function Profile() {
                 </Avatar>
             </div>
 
-            <div className="flex items-center justify-center">
-                <Link href="/profile/update">
-                    <Button>
-                        <PencilIcon size={15} />
-                        Edit
-                    </Button>
-                </Link>
+            <div className="flex items-center justify-center gap-2">
+                {isMeProfile ? (
+                    <Link href="/profile/update">
+                        <Button>
+                            <PencilIcon size={15} />
+                            Edit
+                        </Button>
+                    </Link>
+                ) : (
+                    <>
+                        <Link href="#">
+                            <Button>
+                                <MessageCircleIcon size={15} />
+                                Chat
+                            </Button>
+                        </Link>
+                        <Button variant="outline">
+                            <UserX size={15} />
+                            Unmatch
+                        </Button>
+                    </>
+                )}
             </div>
 
             <Separator />
