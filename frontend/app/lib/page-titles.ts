@@ -1,6 +1,6 @@
 export const pageTitles: Record<string, string> = {
     '/discover': 'Discover',
     '/matches': 'Matches',
-    '/profile': 'My profile',
+    '/profile': 'Profile',
     '/profile/update': 'Update profile'
 }
