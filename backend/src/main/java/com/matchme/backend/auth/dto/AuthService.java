@@ -9,6 +9,7 @@ import com.matchme.backend.user.bio.UserBioService;
 import com.matchme.backend.user.profile.UserProfileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,9 @@ public class AuthService {
     private final UserProfileService userProfileService;
     private final UserBioService userBioService;
 
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
@@ -36,12 +40,14 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .build();
 
-        userRepository.save(user);
+        User saved = userRepository.save(user);
+        saved.setProfileLink(frontendUrl + "/profile/" + user.getId());
+        userRepository.save(saved);
 
-        userProfileService.createEmpty(user);
-        userBioService.createEmpty(user);
+        userProfileService.createEmpty(saved);
+        userBioService.createEmpty(saved);
 
-        IssuedToken token = jwtService.generateToken(user.getEmail());
+        IssuedToken token = jwtService.generateToken(saved.getEmail());
         return AuthResponse.from(token);
     }
 
