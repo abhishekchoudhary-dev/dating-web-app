@@ -9,6 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getUserData } from "@/app/(authenticated)/profile/[[...userId]]/data";
 import { unmatchUser } from "@/app/(authenticated)/matches/actions";
+import OnlineStatusListener from "@/components/realtime/OnlineStatusListener";
+import { cookies } from "next/headers";
+import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
 
 export const metadata: Metadata = {
     title: 'Profile',
@@ -32,15 +35,31 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
         );
     }
 
+     //fetching token and authenticates user for online indicator status
+    const cookieStore = await cookies();
+    const token = cookieStore.get('access_token')?.value ?? '';
+    const me = await getAuthenticatedUser();
+
     return (
         <div className="space-y-5 w-full">
             <div className="flex justify-center">
-                <Avatar className="size-42">
-                    <AvatarImage src={user.profilePictureLink} alt="Profile photo" />
-                    <AvatarFallback className="text-xl">
-                        <UserIcon size={50}/>
-                    </AvatarFallback>
-                </Avatar>
+                <div className="relative w-fit">
+                    <Avatar className="size-42">
+                        <AvatarImage src={user.profilePictureLink} alt="Profile photo" />
+                        <AvatarFallback className="text-xl">
+                            <UserIcon size={50}/>
+                        </AvatarFallback>
+                    </Avatar>
+                
+                    {/*online indicator*/}
+                    {!isMeProfile && userId && (
+                        <OnlineStatusListener
+                            currentUserEmail={me.email}
+                            targetUserId={Number(userId[0])}
+                            className="absolute bottom-0 right-1 size-5 border-[5px] border-green-500 bg-green-200"
+                        />
+                    )}
+                </div>
             </div>
             <div className = "flex font-bold items-center justify-center w-full text-2xl">
                 {user.name}
@@ -68,10 +87,6 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
                                 Unmatch
                             </Button>
                         </form>
-                        {/*<Button variant="outline">
-                            <UserX size={15} />
-                            Unmatch
-                        </Button>*/}
                     </>
                 )}
             </div>
