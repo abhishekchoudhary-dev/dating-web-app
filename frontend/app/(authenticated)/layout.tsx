@@ -5,9 +5,14 @@ import { Separator } from "@/components/ui/separator";
 import PageTitle from "@/components/PageTitle";
 import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
 import { Me } from "@/app/(authenticated)/types";
+import { cookies } from "next/headers";
+import GlobalWebSocketConnector from "@/components/realtime/GlobalWebSocketConnector";
 
 export default async function AuthenticatedLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const user: Me = await getAuthenticatedUser();
+    //get token for global web socket connector
+    const cookieStore = await cookies();
+    const token = cookieStore.get('access_token')?.value ?? '';
 
     return (
         <SidebarProvider>
@@ -24,9 +29,11 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
 
                     <PageTitle />
                 </header>
-                <div className="flex justify-center p-2 mx-auto max-w-4xl w-full">
-                    { children }
-                </div>
+                <GlobalWebSocketConnector token={token}>
+                    <div className="flex justify-center p-2 mx-auto max-w-4xl w-full">
+                        { children }
+                    </div>
+                </GlobalWebSocketConnector>
             </SidebarInset>
         </SidebarProvider>
     )
