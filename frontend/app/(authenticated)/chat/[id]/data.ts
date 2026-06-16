@@ -18,6 +18,11 @@ export async function getChatData(userId: number) {
         fetchWithAuth(`http://localhost:8080/api/messages/${userId}`),
     ]);
 
+    //if users are not matched then no messages
+    if(messages===null){
+        return null;
+    }
+
     return {
         user: {
             id: userId,
