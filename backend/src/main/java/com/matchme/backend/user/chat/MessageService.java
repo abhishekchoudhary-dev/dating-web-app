@@ -12,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
-
+import com.matchme.backend.user.connection.ConnectionRepository;
+import com.matchme.backend.user.connection.enums.ConnectionStatus;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private final ConnectionRepository connectionRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     // Track online users in memory
@@ -109,8 +111,29 @@ public class MessageService {
     }
 
     public List<MessageResponse> getConversation(User currentUser, Long otherUserId) {
+        //exlude self
+        if (currentUser.getId().equals(otherUserId)) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        
         User otherUser = userRepository.findById(otherUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        //get convo only when users are matched  
+        boolean isMatched = connectionRepository
+            .findByRequesterAndStatusOrReceiverAndStatus(
+                currentUser, ConnectionStatus.MATCHED,
+                currentUser, ConnectionStatus.MATCHED
+            )
+            .stream()
+            .anyMatch(c -> 
+                c.getRequester().getId().equals(otherUserId) || 
+                c.getReceiver().getId().equals(otherUserId)
+            );
+
+        if (!isMatched) {
+            throw new ResourceNotFoundException("User not found");
+        }
 
         return messageRepository.findConversation(currentUser, otherUser)
                 .stream()
