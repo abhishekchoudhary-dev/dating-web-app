@@ -67,4 +67,11 @@ public class MeController {
     public ResponseEntity<Map<String, List<? extends UserBioOption>>> getMeBioOptions() {
         return ResponseEntity.ok(userBioService.getOptions());
     }
+
+    //toggle hide or unhide online status
+    @PatchMapping("/hide-online-status")
+    public ResponseEntity<Void> toggleHideOnlineStatus(@AuthenticationPrincipal User user) {
+    userService.toggleHideOnlineStatus(user.getId());
+    return ResponseEntity.noContent().build();
+    }
 }

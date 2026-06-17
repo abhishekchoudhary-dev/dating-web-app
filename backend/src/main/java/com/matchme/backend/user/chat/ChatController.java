@@ -71,10 +71,19 @@ public class ChatController {
         messageService.sendTypingEvent(user, event);
     }
 
+    // handles online status check requests for a user
     @MessageMapping("/status/request")
     public void requestStatus(Principal principal, @Payload Map<String, Long> request) {
         Long userId = request.get("userId");
-        boolean online = messageService.isOnline(userId);
+        //old online check but we add the boolean check now
+        //boolean online = messageService.isOnline(userId);
+
+        // Check if user is hiding their status explicitly
+        // ensuring status is always updated
+        User targetUser = userRepository.findById(userId).orElse(null);
+        boolean online = targetUser != null 
+        && !targetUser.isHideOnlineStatus() 
+        && messageService.isOnline(userId);
         
         StatusEvent event = new StatusEvent();
         event.setUserId(userId);

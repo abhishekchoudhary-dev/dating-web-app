@@ -8,6 +8,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import com.matchme.backend.user.UserRepository;
+import com.matchme.backend.user.User;
 
 import java.security.Principal;
 
@@ -17,6 +19,7 @@ import java.security.Principal;
 public class WebSocketEventListener {
 
     private final MessageService messageService;
+    private final UserRepository userRepository;
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
@@ -27,10 +30,20 @@ public class WebSocketEventListener {
             var user = (com.matchme.backend.user.User) auth.getPrincipal();
             log.info("User connected: {}", user.getEmail());
             if (user.getId() != null) {
-                messageService.userConnected(user.getId());
+                User freshUser = userRepository.findById(user.getId()).orElse(null);
+                if (freshUser != null){
+                    //if there is user we must add to online map
+                    messageService.trackUserOnline(user.getId());
+                    //now hide broadcasting behind a check
+                    if (!freshUser.isHideOnlineStatus()){
+                        messageService.broadcastStatus(user.getId(),true);
+                    }
+                }
+                    
             }
         }
     }
+    
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {

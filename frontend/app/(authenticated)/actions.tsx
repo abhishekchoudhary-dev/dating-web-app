@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FetchResponse, Me } from "@/app/(authenticated)/types";
+import { revalidatePath } from "next/cache";
 
 export async function fetchWithAuth<T>(url: string, options?: RequestInit): Promise<FetchResponse<T>> {
     const cookieStore = await cookies();
@@ -31,6 +32,14 @@ export async function getAuthenticatedUser(): Promise<Me> {
     });
 
     return response.data;
+}
+
+//check user status preference
+export async function toggleHideOnlineStatus() {
+    await fetchWithAuth('http://localhost:8080/api/me/hide-online-status', {
+        method: 'PATCH'
+    });
+    revalidatePath('/');
 }
 
 export async function logoutUser() {

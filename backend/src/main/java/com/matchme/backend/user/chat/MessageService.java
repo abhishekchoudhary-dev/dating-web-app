@@ -71,7 +71,7 @@ public class MessageService {
         return response;
     }
 
-
+    //sending typing event on subscribed endpoint
     public void sendTypingEvent(User sender, TypingEvent event) {
         event.setSenderId(sender.getId());
         messagingTemplate.convertAndSendToUser(
@@ -80,10 +80,20 @@ public class MessageService {
                 event
         );
     }
-
-    public void userConnected(Long userId) {
+    
+    //put in map when someone comes online irrespective of status
+    public void trackUserOnline(Long userId) {
         onlineUsers.put(userId, true);
-        broadcastStatus(userId, true);
+    }
+
+    //presently unused as now we have direct function calls from web socket event listener
+    public void userConnected(Long userId) {
+    onlineUsers.put(userId, true);
+    userRepository.findById(userId).ifPresent(user -> {
+        if (!user.isHideOnlineStatus()) {
+            broadcastStatus(userId, true);
+        }
+    });
     }
 
     public void userDisconnected(Long userId) {
@@ -96,7 +106,8 @@ public class MessageService {
         broadcastStatus(userId, false);
     }
 
-    private void broadcastStatus(Long userId, boolean online) {
+    //broadcast users new status to everyone who is subscribed to his socket
+    public void broadcastStatus(Long userId, boolean online) {
     StatusEvent event = new StatusEvent();
     event.setUserId(userId);
     event.setOnline(online);
@@ -106,10 +117,12 @@ public class MessageService {
     messagingTemplate.convertAndSend("/topic/status", event);
     }
 
+    //get online status
     public boolean isOnline(Long userId) {
         return onlineUsers.getOrDefault(userId, false);
     }
 
+    //get chat conversation with user
     public List<MessageResponse> getConversation(User currentUser, Long otherUserId) {
         //exlude self
         if (currentUser.getId().equals(otherUserId)) {

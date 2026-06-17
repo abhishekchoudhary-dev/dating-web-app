@@ -12,6 +12,7 @@ export type Me = {
     profilePictureLink: string;
     profileLink: string;
     profileComplete: boolean;
+    hideOnlineStatus: boolean;
 }
 
 export type MeProfile = {

@@ -12,4 +12,5 @@ public class MeResponse {
     String profileLink;
     String profilePictureLink;
     Boolean profileComplete;
+    Boolean hideOnlineStatus;
 }

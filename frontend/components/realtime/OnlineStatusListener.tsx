@@ -16,13 +16,16 @@ export default function OnlineStatusListener({ currentUserEmail, targetUserId, c
     useEffect(() => {
         if (!client || !isConnected) return;
 
+        //receive broadcasted status
         const statusBroadcastSub = client.subscribe('/topic/status', (frame) => {
+            console.log('Profile status broadcast:', frame.body);
             const event = JSON.parse(frame.body);
             if (event.userId === targetUserId) {
                 setIsOnline(event.online);
             }
         });
 
+        //request status of particular user when we log in which is for authenticated user
         const statusDirectSub = client.subscribe(`/user/${currentUserEmail}/queue/status`, (frame) => {
             const event = JSON.parse(frame.body);
             if (event.userId === targetUserId) {
@@ -30,6 +33,7 @@ export default function OnlineStatusListener({ currentUserEmail, targetUserId, c
             }
         });
 
+        //publish our status on our own without anyone request for updates
         setTimeout(() => {
             client.publish({
                 destination: '/app/status/request',
@@ -44,6 +48,6 @@ export default function OnlineStatusListener({ currentUserEmail, targetUserId, c
     }, [isConnected]);
 
     return (
-        <span className={`size-3 rounded-full inline-block border-[3px] bg-background ${isOnline ? 'border-green-500' : 'border-gray-400'} ${className ?? ''}`} />
+        <span className={`size-3 rounded-full inline-block border-[6px] ${isOnline ? 'border-green-500 bg-green-200' : 'border-gray-400 bg-gray-200'} ${className ?? ''}`} />
     );
 }
