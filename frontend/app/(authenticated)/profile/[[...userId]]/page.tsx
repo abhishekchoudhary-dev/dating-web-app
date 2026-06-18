@@ -56,7 +56,7 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
                         <OnlineStatusListener
                             currentUserEmail={me.email}
                             targetUserId={Number(userId[0])}
-                            className="absolute bottom-0 right-1 size-5 border-[5px] border-green-500 bg-green-200"
+                            className="absolute bottom-0 right-1 size-5"
                         />
                     )}
                 </div>

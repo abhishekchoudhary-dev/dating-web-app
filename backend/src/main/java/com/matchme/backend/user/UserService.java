@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.matchme.backend.user.chat.MessageService;
+import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -30,6 +32,8 @@ public class UserService {
     private final UserFullProfileMapper userFullProfileMapper;
     private final UserProfileMapper userProfileMapper;
     private final UserBioMapper userBioMapper;
+    @Lazy
+    private final MessageService messageService;
 
     @Value("${app.backend.url}")
     private String backendUrl;
@@ -125,5 +129,24 @@ public class UserService {
 
     public boolean isProfileComplete(User user, UserProfile profile, UserBio bio) {
         return user.isComplete() && bio.isComplete() && profile.isComplete();
+    }
+
+    @Transactional
+    public void toggleHideOnlineStatus(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setHideOnlineStatus(!user.isHideOnlineStatus());
+        userRepository.save(user);
+        //we meed to broadcase herer??
+        // Broadcast status change immediately
+        if (user.isHideOnlineStatus()) {
+            // Just turned on hiding — broadcast as offline
+            messageService.broadcastStatus(userId, false);
+        } else {
+            // Just turned off hiding — broadcast as online if connected
+            if (messageService.isOnline(userId)) {
+                messageService.broadcastStatus(userId, true);
+            }
+        }
     }
 }

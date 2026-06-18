@@ -23,6 +23,7 @@ public class UserMapper {
                 .profileLink(user.getProfileLink())
                 .profilePictureLink(user.getProfilePictureLink())
                 .profileComplete(profileComplete)
+                .hideOnlineStatus(user.isHideOnlineStatus())
                 .build();
     }
 }

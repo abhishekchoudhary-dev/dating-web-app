@@ -1,11 +1,11 @@
 "use client"
 
-import { logoutUser } from "@/app/(authenticated)/actions";
-
+import { logoutUser, toggleHideOnlineStatus } from "@/app/(authenticated)/actions";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import { ChevronsUpDownIcon, LogOutIcon, UserIcon } from "lucide-react"
+import { ChevronsUpDownIcon,EyeOffIcon, LogOutIcon, UserIcon } from "lucide-react"
 
 export function NavUser({
   user,
@@ -14,8 +14,18 @@ export function NavUser({
     name: string
     email: string
     profilePictureLink: string
+    hideOnlineStatus: boolean
   }
 }) {
+
+  //toggle online status option
+  const [hidden, setHidden] = useState(user.hideOnlineStatus);
+
+  const handleToggle = async () => {
+    setHidden(prev => !prev);
+    await toggleHideOnlineStatus();
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -44,6 +54,10 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
+            <DropdownMenuItem onClick={handleToggle}>
+              <EyeOffIcon />
+              {hidden ? 'Show online status' : 'Hide online status'}
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={ async () => await logoutUser() }>
               <LogOutIcon/> Log out
             </DropdownMenuItem>

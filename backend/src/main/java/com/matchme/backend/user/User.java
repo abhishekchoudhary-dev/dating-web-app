@@ -34,6 +34,10 @@ public class User implements UserDetails {
     //chat
     private Instant lastSeenAt;
 
+    //online status preference
+    @Column(nullable = false)
+    private boolean hideOnlineStatus = false;
+
     // UserDetails
     @NonNull
     @Override
@@ -55,4 +59,6 @@ public class User implements UserDetails {
     public boolean isComplete() {
         return name != null;
     }
+
+    
 }
