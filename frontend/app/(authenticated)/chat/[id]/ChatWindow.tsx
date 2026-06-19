@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from "react";
-import { Client } from "@stomp/stompjs";
-//import SockJS from "sockjs-client";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserIcon, SendIcon } from "lucide-react";
+import { useWebSocket } from "@/components/realtime/WebSocketContext";
 
 type Message = {
     id?: number
@@ -31,107 +30,98 @@ type Props = {
 }
 
 export default function ChatWindow({ otherUser, initialMessages, token, currentUserId, currentUserEmail }: Props) {
+    //state
     const [messages, setMessages] = useState<Message[]>(initialMessages);
     const [input, setInput] = useState('');
     const [isOnline, setIsOnline] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
-    //const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-    const clientRef = useRef<Client | null>(null);
+    //oagination
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(initialMessages.length === 10);
+    const [loadingMore, setLoadingMore] = useState(false);
+    //refs
+    const loadingOlderRef = useRef(false);
+    const scrollHeightBeforeRef = useRef(0);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Use shared WebSocket from context
+    const { client, isConnected } = useWebSocket();
+
     useEffect(() => {
+        if (!client || !isConnected) return;
 
-        let active = true;
-
-        // Connect WebSocket
-        let client: Client;
-
-        import('sockjs-client').then(({ default: SockJS }) => {
-            if (!active) return;
-            client = new Client({
-                webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
-                connectHeaders: {
-                    Cookie: `access_token=${token}`
-                },
-                onConnect: () => {
-
-                    console.log('WebSocket connected!');
-
-                    client.subscribe(`/user/${currentUserEmail}/queue/messages`, (frame) => {
-                        const message = JSON.parse(frame.body);
-                        console.log('Received main message:', frame.body);
-                        setMessages(prev => [...prev, message]);
-
-                        // Mark as read immediately if user is in window already
-                        fetch(`http://localhost:8080/api/messages/${otherUser.id}/read`, {
-                            method: 'POST',
-                            credentials: 'include'
-                        });
-                    });
-
-                    //typing indicator
-                    client.subscribe(`/user/${currentUserId}/queue/typing`, (frame) => {
-                        const event = JSON.parse(frame.body);
-                        if (String(event.senderId) === String(otherUser.id)) {
-                            setIsTyping(event.typing);
-                        }
-                    });
-                   
-
-                    //broadcast online status of other user
-                    client.subscribe('/topic/status', (frame) => {
-                        const event = JSON.parse(frame.body);
-                        if (event.userId === otherUser.id) {
-                            setIsOnline(event.online);
-                        }
-                    });
-
-                    //Direct response to online status
-                    client.subscribe(`/user/${currentUserEmail}/queue/status`, (frame) => {
-                        const event = JSON.parse(frame.body);
-                        if (event.userId === otherUser.id) {
-                            setIsOnline(event.online);
-                        }
-                    });
-                   
-                    //requesting current online status
-                    setTimeout(() => {
-                        client.publish({
-                            destination: '/app/status/request',
-                            body: JSON.stringify({ userId: otherUser.id })
-                        });
-                    }, 100);
-                }
-            });
-
-            client.activate();
-            clientRef.current = client;
+        // Mark as read when chat opens
+        fetch(`http://localhost:8080/api/messages/${otherUser.id}/read`, {
+            method: 'POST',
+            credentials: 'include'
         });
 
-        return () => {
-            active = false;
-            clientRef.current?.deactivate();
-        };
-    }, []);
+        const messagesSub = client.subscribe(`/user/${currentUserEmail}/queue/messages`, (frame) => {
+            const message = JSON.parse(frame.body);
+            setMessages(prev => [...prev, message]);
+            fetch(`http://localhost:8080/api/messages/${otherUser.id}/read`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        });
 
-    // Scroll to bottom when messages change
+        const typingSub = client.subscribe(`/user/${currentUserId}/queue/typing`, (frame) => {
+            const event = JSON.parse(frame.body);
+            if (String(event.senderId) === String(otherUser.id)) {
+                setIsTyping(event.typing);
+            }
+        });
+
+        const statusBroadcastSub = client.subscribe('/topic/status', (frame) => {
+            const event = JSON.parse(frame.body);
+            if (event.userId === otherUser.id) {
+                setIsOnline(event.online);
+            }
+        });
+
+        const statusDirectSub = client.subscribe(`/user/${currentUserEmail}/queue/status`, (frame) => {
+            const event = JSON.parse(frame.body);
+            if (event.userId === otherUser.id) {
+                setIsOnline(event.online);
+            }
+        });
+
+        setTimeout(() => {
+            client.publish({
+                destination: '/app/status/request',
+                body: JSON.stringify({ userId: otherUser.id })
+            });
+        }, 100);
+
+        return () => {
+            messagesSub.unsubscribe();
+            typingSub.unsubscribe();
+            statusBroadcastSub.unsubscribe();
+            statusDirectSub.unsubscribe();
+        };
+    }, [isConnected]);
+
     useEffect(() => {
+        if (loadingOlderRef.current) {
+            loadingOlderRef.current = false;
+            return;
+        }
         messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
     }, [messages]);
-    
-    //mark chat messages as read when chat is opened
-    useEffect(() => {
-    fetch(`http://localhost:8080/api/messages/${otherUser.id}/read`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-    }, []);
+
+    useLayoutEffect(() => {
+        if (loadingOlderRef.current && messagesContainerRef.current) {
+            const container = messagesContainerRef.current;
+            container.scrollTop = container.scrollHeight - scrollHeightBeforeRef.current;
+        }
+    }, [messages]);
 
     const sendMessage = () => {
-        if (!input.trim() || !clientRef.current?.connected) return;
+        if (!input.trim() || !client?.connected) return;
 
-        clientRef.current.publish({
+        client.publish({
             destination: '/app/chat',
             body: JSON.stringify({
                 receiverId: otherUser.id,
@@ -139,7 +129,6 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
             })
         });
 
-        // Add message to local state immediately
         setMessages(prev => [...prev, {
             senderId: currentUserId!,
             receiverId: otherUser.id,
@@ -153,10 +142,9 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
     const handleTyping = (value: string) => {
         setInput(value);
 
-        if (!clientRef.current?.connected) return;
+        if (!client?.connected) return;
 
-        // Send typing event
-        clientRef.current.publish({
+        client.publish({
             destination: '/app/typing',
             body: JSON.stringify({
                 receiverId: otherUser.id,
@@ -164,16 +152,17 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
             })
         });
 
-        // Stop typing after 3 seconds of inactivity
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => {
-            clientRef.current?.publish({
-                destination: '/app/typing',
-                body: JSON.stringify({
-                    receiverId: otherUser.id,
-                    typing: false
-                })
-            });
+            if (client?.connected) {
+                client.publish({
+                    destination: '/app/typing',
+                    body: JSON.stringify({
+                        receiverId: otherUser.id,
+                        typing: false
+                    })
+                });
+            }
         }, 2000);
     };
 
@@ -182,6 +171,29 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
             e.preventDefault();
             sendMessage();
         }
+    };
+
+    const loadMoreMessages = async () => {
+        setLoadingMore(true);
+        loadingOlderRef.current = true;
+        const nextPage = page + 1;
+
+        const response = await fetch(
+            `http://localhost:8080/api/messages/${otherUser.id}?page=${nextPage}`,
+            { credentials: 'include' }
+        );
+
+        const olderMessages = await response.json();
+
+        if (olderMessages.length < 10) {
+            setHasMore(false);
+        }
+
+        scrollHeightBeforeRef.current = messagesContainerRef.current?.scrollHeight ?? 0;
+
+        setMessages(prev => [...olderMessages, ...prev]);
+        setPage(nextPage);
+        setLoadingMore(false);
     };
 
     return (
@@ -207,7 +219,19 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+                {hasMore && (
+                    <div className="flex justify-center">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={loadMoreMessages}
+                            disabled={loadingMore}
+                            className="text-xs cursor-pointer">
+                            {loadingMore ? 'Loading...' : 'Load older messages'}
+                        </Button>
+                    </div>
+                )}
                 {messages.length === 0 && (
                     <div className="flex items-center justify-center h-full">
                         <p className="text-muted-foreground text-sm">
@@ -228,13 +252,13 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
                             {msg.content}
                         </div>
                         <span suppressHydrationWarning className="text-xs text-muted-foreground mt-1 px-1">
-                            {new Date(msg.sentAt).toLocaleDateString([], { 
-                            day: '2-digit', 
-                            month: 'short'
-                        })} {new Date(msg.sentAt).toLocaleTimeString([], { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                        })}
+                            {new Date(msg.sentAt).toLocaleDateString([], {
+                                day: '2-digit',
+                                month: 'short'
+                            })} {new Date(msg.sentAt).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
                         </span>
                     </div>
                 ))}

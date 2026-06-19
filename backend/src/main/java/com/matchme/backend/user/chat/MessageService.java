@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.util.Collections;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -57,7 +62,7 @@ public class MessageService {
         messagingTemplate.convertAndSendToUser(
                 managedReceiver.getEmail(),
                 "/queue/messages",
-                response
+                response //payload
         );
 
         //send updated unread count to the sender
@@ -77,7 +82,7 @@ public class MessageService {
         messagingTemplate.convertAndSendToUser(
                 event.getReceiverId().toString(),
                 "/queue/typing",
-                event
+                event //payload
         );
     }
     
@@ -123,7 +128,7 @@ public class MessageService {
     }
 
     //get chat conversation with user
-    public List<MessageResponse> getConversation(User currentUser, Long otherUserId) {
+    public List<MessageResponse> getConversation(User currentUser, Long otherUserId, int page) {
         //exlude self
         if (currentUser.getId().equals(otherUserId)) {
             throw new ResourceNotFoundException("User not found");
@@ -148,10 +153,23 @@ public class MessageService {
             throw new ResourceNotFoundException("User not found");
         }
 
-        return messageRepository.findConversation(currentUser, otherUser)
+        Pageable pageable = PageRequest.of(page,10);
+
+         // Reverse to get chronological order (oldest first)
+        List<MessageResponse> messages = messageRepository
+                .findConversation(currentUser, otherUser, pageable)
+                .getContent()
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+        
+        Collections.reverse(messages);
+        return messages;
+
+        //return messageRepository.findConversation(currentUser, otherUser)
+        //        .stream()
+        //        .map(this::toResponse)
+        //        .collect(Collectors.toList());
     }
 
     public Long getUnreadCount(User currentUser, Long otherUserId) {
@@ -166,6 +184,11 @@ public class MessageService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         log.info("Marking messages as read from {} for {}", otherUser.getEmail(), currentUser.getEmail());
         messageRepository.markAsRead(otherUser, currentUser);
+    }
+
+    //get last message timestamp for matches page
+    public Optional<Instant> getLastMessageTime(User currentUser, User otherUser) {
+    return messageRepository.findLastMessageTime(currentUser, otherUser);
     }
 
     private MessageResponse toResponse(Message message) {
