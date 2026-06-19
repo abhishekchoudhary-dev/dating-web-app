@@ -40,10 +40,7 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
             </div>
         );
     }
-
-     //fetching token and authenticates user for online indicator status
-    const cookieStore = await cookies();
-    const token = cookieStore.get('access_token')?.value ?? '';
+    
     const me = await getAuthenticatedUser();
 
     return (
