@@ -31,7 +31,13 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
 
     if (!user) {
         return (
-            <span className="flex gap-2"><UserX /> User not found</span>
+            <div className="flex flex-col items-center justify-center min-h-96 gap-4 text-center">
+                <div className="text-6xl">❌</div>
+                <h2 className="text-xl font-semibold">Profile not found</h2>
+                <p className="text-muted-foreground max-w-sm">
+                    The user you are looking for does not exist
+                </p>
+            </div>
         );
     }
 
