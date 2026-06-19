@@ -11,10 +11,16 @@ import java.util.List;
 
 @Value
 @Builder
-public class UserBioResponse {
+public class MeBioResponse {
     Integer age;
     Gender gender;
     List<Interest> interests;
     List<Language> languages;
     String location;
+
+    // Preferences
+    Integer preferenceAgeMin;
+    Integer preferenceAgeMax;
+    Integer preferenceDistanceRadius;
+    GenderPreference preferenceGender;
 }

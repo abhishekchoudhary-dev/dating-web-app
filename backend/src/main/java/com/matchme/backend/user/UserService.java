@@ -5,10 +5,13 @@ import com.matchme.backend.exception.ResourceNotFoundException;
 import com.matchme.backend.user.bio.UserBio;
 import com.matchme.backend.user.bio.UserBioMapper;
 import com.matchme.backend.user.bio.UserBioRepository;
+import com.matchme.backend.user.connection.ConnectionRepository;
+import com.matchme.backend.user.connection.enums.ConnectionStatus;
 import com.matchme.backend.user.dto.*;
 import com.matchme.backend.user.profile.UserProfile;
 import com.matchme.backend.user.profile.UserProfileMapper;
 import com.matchme.backend.user.profile.UserProfileRepository;
+import com.matchme.backend.user.recommendation.RecommendationService;
 import com.matchme.backend.util.FileStorage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserBioRepository userBioRepository;
+    private final ConnectionRepository connectionRepository;
     private final UserMapper userMapper;
     private final FileStorage fileStorage;
     private final UserFullProfileMapper userFullProfileMapper;
@@ -34,6 +38,7 @@ public class UserService {
     private final UserBioMapper userBioMapper;
     @Lazy
     private final MessageService messageService;
+    private final RecommendationService recommendationService;
 
     @Value("${app.backend.url}")
     private String backendUrl;
@@ -76,8 +81,11 @@ public class UserService {
         );
     }
 
-    public UserResponse get(Long userId) {
+    public UserResponse get(Long userId, User authenticatedUser) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found for id: " + userId));
+
+        if (!areMatchedOrRecommended(user, authenticatedUser)) throw new ResourceNotFoundException("user not found for id: " + userId);
+
         return userMapper.toResponse(user);
     }
 
@@ -148,5 +156,17 @@ public class UserService {
                 messageService.broadcastStatus(userId, true);
             }
         }
+    }
+
+    public boolean areMatchedOrRecommended(User target, User requester) {
+        // Return early if target and requester are the same
+        if (target.getId().equals(requester.getId())) return true;
+
+        // Check if requested user and authenticated user are matched
+        boolean areMatched = connectionRepository.findBetweenUsersByStatus(target.getId(), requester.getId(), ConnectionStatus.MATCHED).isPresent();
+        if (areMatched) return true;
+
+        // Check if requested user is recommended for the authenticated user
+        return recommendationService.getRecommendations(requester).contains(target.getId());
     }
 }
