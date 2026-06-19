@@ -17,10 +17,4 @@ public class UserBioResponse {
     List<Interest> interests;
     List<Language> languages;
     String location;
-
-    // Preferences
-    Integer preferenceAgeMin;
-    Integer preferenceAgeMax;
-    Integer preferenceDistanceRadius;
-    GenderPreference preferenceGender;
 }
