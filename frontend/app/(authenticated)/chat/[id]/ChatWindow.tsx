@@ -49,6 +49,7 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
     // Use shared WebSocket from context
     const { client, isConnected } = useWebSocket();
 
+    //actual socket subscriptions. set up after connect and clean at the end
     useEffect(() => {
         if (!client || !isConnected) return;
 
