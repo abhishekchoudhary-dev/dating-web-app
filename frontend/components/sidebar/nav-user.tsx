@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import { ChevronsUpDownIcon,EyeOffIcon, LogOutIcon, UserIcon } from "lucide-react"
+import { ChevronsUpDownIcon,EyeIcon, EyeOffIcon, LogOutIcon, UserIcon } from "lucide-react"
 
 export function NavUser({
   user,
@@ -55,7 +55,7 @@ export function NavUser({
             sideOffset={4}
           >
             <DropdownMenuItem onClick={handleToggle}>
-              <EyeOffIcon />
+              {hidden ? <EyeIcon /> : <EyeOffIcon />}
               {hidden ? 'Show online status' : 'Hide online status'}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={ async () => await logoutUser() }>

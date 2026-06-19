@@ -14,9 +14,11 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.*;
+import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +32,9 @@ public class ChatController {
     @GetMapping("/api/messages/{userId}")
     public ResponseEntity<List<MessageResponse>> getConversation(
             @AuthenticationPrincipal User user,
-            @PathVariable Long userId) {
-        return ResponseEntity.ok(messageService.getConversation(user, userId));
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(messageService.getConversation(user, userId, page));
     }
 
     //endpoint to get unread message count
@@ -95,4 +98,17 @@ public class ChatController {
             event
         );
     }
+
+    //get last message timestamp for matches page
+    @GetMapping("/api/messages/{userId}/last")
+    public ResponseEntity<Instant> getLastMessageTime(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long userId) {
+        User otherUser = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return messageService.getLastMessageTime(user, otherUser)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.noContent().build());
+    }
+
 }

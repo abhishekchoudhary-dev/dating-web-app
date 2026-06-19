@@ -20,12 +20,22 @@ export default function MatchesClient({ initialMatches, token, currentUserEmail 
 
     //handles unread message updates
     const handleUnreadUpdate = (senderId: number, count: number) => {
-        setMatches(prev => prev.map(match =>
+        setMatches(prev => {
+        const updated = prev.map(match =>
             match.id === senderId
-                ? { ...match, unreadCount: count }
+                ? { ...match, unreadCount: count, lastMessageAt: new Date().toISOString() }
                 : match
-        ));
+        );
+        const matchIndex = updated.findIndex(m => m.id === senderId);
+        if (matchIndex > 0) {
+            const match = updated.splice(matchIndex, 1)[0];
+            updated.unshift(match);
+        }
+        return updated;
+        });
     };
+
+
 
     //handles status updates
     const handleStatusUpdate = (userId: number, online: boolean) => {
@@ -73,6 +83,15 @@ export default function MatchesClient({ initialMatches, token, currentUserEmail 
                                         <MapPinIcon className="size-3" />
                                         {match.location}
                                     </div>
+                                )}
+                                {match.lastMessageAt && (
+                                    <p className="text-xs mt-3 text-muted-foreground">
+                                        Last message at <span suppressHydrationWarning>
+                                            {new Date(match.lastMessageAt).toLocaleDateString([], { day: '2-digit', month: 'short' })}
+                                            {' '}
+                                            {new Date(match.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </p>
                                 )}
                             </div>
 

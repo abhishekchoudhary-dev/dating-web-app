@@ -12,10 +12,10 @@ async function fetchWithAuth(url: string) {
     return response.json();
 }
 
-export async function getChatData(userId: number) {
+export async function getChatData(userId: number, page: number = 0) {
     const [user, messages] = await Promise.all([
         fetchWithAuth(`http://localhost:8080/api/users/${userId}`),
-        fetchWithAuth(`http://localhost:8080/api/messages/${userId}`),
+        fetchWithAuth(`http://localhost:8080/api/messages/${userId}?page = ${page}`),
     ]);
 
     //if users are not matched then no messages

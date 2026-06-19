@@ -101,20 +101,17 @@ public class ConnectionService {
         return ConnectionStatus.DISMISSED;
     }
 
-    // Get all matched connection IDs for current user
+    //return connections in the recent. Matched check done by query in repository
     public List<Long> getConnections(User currentUser) {
-        List<Connection> matched = connectionRepository
-                .findByRequesterAndStatusOrReceiverAndStatus(
-                        currentUser, ConnectionStatus.MATCHED,
-                        currentUser, ConnectionStatus.MATCHED
-                );
-
-        return matched.stream()
+        return connectionRepository
+                .findMatchedConnectionsOrderedByRecentMessage(currentUser)
+                .stream()
                 .map(c -> c.getRequester().getId().equals(currentUser.getId())
                         ? c.getReceiver().getId()
                         : c.getRequester().getId())
                 .collect(Collectors.toList());
     }
+   
 
     // Get IDs to exclude from recommendations - tricky part - discuss?
     public List<Long> getExcludedUserIds(User currentUser) {
