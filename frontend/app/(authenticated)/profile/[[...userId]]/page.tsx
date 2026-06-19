@@ -10,20 +10,22 @@ import Link from "next/link";
 import { getUserData } from "@/app/(authenticated)/profile/[[...userId]]/data";
 import { unmatchUser } from "@/app/(authenticated)/matches/actions";
 import OnlineStatusListener from "@/components/realtime/OnlineStatusListener";
-import { cookies } from "next/headers";
 import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
     title: 'Profile',
 }
 
 export default async function Profile(props: PageProps<'/profile/[[...userId]]'>) {
+    const me = await getAuthenticatedUser();
     const { userId } = await props.params;
     let user;
     let isMeProfile = false;
 
     if (userId) {
         user = await getUserData(userId[0])
+        if (user && user.id === me.id) redirect("/profile");
     } else {
         user = await getAuthenticatedUserData();
         isMeProfile = true;
@@ -40,8 +42,6 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
             </div>
         );
     }
-    
-    const me = await getAuthenticatedUser();
 
     return (
         <div className="space-y-5 w-full">
@@ -78,13 +78,13 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
                     </Link>
                 ) : (
                     <>
-                        <Link href={`/chat/${userId[0]}`}>
+                        <Link href={`/chat/${user.id}`}>
                             <Button className="cursor-pointer py-5 px-10 bg-pink-500 hover:bg-pink-600 text-white">
                                 <MessageCircleIcon size={15} />
                                 Chat
                             </Button>
                         </Link>
-                        <form action={unmatchUser.bind(null, Number(userId[0]))}>
+                        <form action={unmatchUser.bind(null, Number(user.id))}>
                             <Button className="cursor-pointer py-5 px-10" variant="outline" type="submit">
                                 <UserX size={15} />
                                 Unmatch
