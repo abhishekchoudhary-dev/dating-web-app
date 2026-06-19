@@ -158,12 +158,15 @@ public class UserService {
         }
     }
 
-    public boolean areMatchedOrRecommended(User requestedUser, User authenticatedUser) {
+    public boolean areMatchedOrRecommended(User target, User requester) {
+        // Return early if target and requester are the same
+        if (target.getId().equals(requester.getId())) return true;
+
         // Check if requested user and authenticated user are matched
-        boolean areMatched = connectionRepository.findBetweenUsersByStatus(requestedUser.getId(), authenticatedUser.getId(), ConnectionStatus.MATCHED).isPresent();
+        boolean areMatched = connectionRepository.findBetweenUsersByStatus(target.getId(), requester.getId(), ConnectionStatus.MATCHED).isPresent();
         if (areMatched) return true;
 
         // Check if requested user is recommended for the authenticated user
-        return recommendationService.getRecommendations(authenticatedUser).contains(requestedUser.getId());
+        return recommendationService.getRecommendations(requester).contains(target.getId());
     }
 }
