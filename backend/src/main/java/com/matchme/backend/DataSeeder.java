@@ -54,7 +54,8 @@ public class DataSeeder implements ApplicationRunner {
 
         String[] locations = {
             "London", "Manchester", "Birmingham", "Leeds", "Glasgow",
-            "Liverpool", "Bristol", "Edinburgh", "Sheffield", "Newcastle","Tallinn"
+            "Liverpool", "Bristol", "Edinburgh", "Sheffield", "Newcastle","Tallinn",
+            "Riga","Vilnius","Helsinki"
         };
 
         String[] aboutMeTexts = {
@@ -134,13 +135,13 @@ public class DataSeeder implements ApplicationRunner {
             GenderPreference preferenceGender, int preferenceAgeMin,
             int preferenceAgeMax, int preferenceDistanceRadius) {
         try {
-            // Skip if already exists
+            // Skip if user is already existng
             if (userRepository.findByEmail(email).isPresent()) {
                 log.info("Seeder: skipping {} — already exists", email);
                 return;
             }
 
-            // Register — creates User + empty UserProfile + UserBio
+            // Register — creates User with empty UserProfile and UserBio
             authService.register(new RegisterRequest(email, password));
 
             // Find saved user
