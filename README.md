@@ -6,8 +6,8 @@ A full-stack recommendation application, to connect users based on their profile
 
 ### Backend Framework
 
-- Java 25 - Primary backend development language
-- Spring Boot 3 — application framework
+- Java 26 - Primary backend development language
+- Spring Boot 4 — application framework
 - Spring Security — authentication and authorization
 - Spring WebSocket + STOMP — real time messaging and online status
 - JWT (jjwt) — stateless authentication via HttpOnly cookies
@@ -60,7 +60,7 @@ A full-stack recommendation application, to connect users based on their profile
 
 ### Prerequisites
 
-#### Node.js & npm (v18+ or higher - required for Next.js 16 which needs v18+)
+#### <u>Node.js & npm (v18+ or higher - required for Next.js 16 which needs v18+)</u>
 
 Installation steps - 
 
@@ -93,7 +93,7 @@ node --version   # should show v18.x.x or higher
 npm --version    # should show version
 ```
 
-#### Java 26 Installation
+#### <u>Java 26 Installation</u>
 
 ##### For Windows
 
@@ -126,7 +126,7 @@ brew install --cask oracle-jdk
 java -version   # should show v26.xx.xx
 ```
 
-#### Maven Installation
+#### <u>Maven Installation</u>
 
 ##### For Windows
 
@@ -156,7 +156,7 @@ brew install maven
 mvn -version   # should show v3.9.x.
 ```
 
-#### PostgreSQL Installation
+#### <u>PostgreSQL Installation</u>
 
 ##### For Windows
 
