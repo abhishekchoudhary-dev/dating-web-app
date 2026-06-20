@@ -7,18 +7,20 @@ export async function getUserData(userId: string): Promise<FullUser | undefined>
         profileResponse,
         bioResponse
     ] = await Promise.all([
-        fetchWithAuth<User>(`http://localhost:8080/api/users/${userId}`, {
+        fetchWithAuth<User>(`/users/${userId}`, {
             cache: 'no-store'
         }),
-        fetchWithAuth<UserBio>(`http://localhost:8080/api/users/${userId}/profile`, {
+        fetchWithAuth<UserBio>(`/users/${userId}/profile`, {
             cache: 'no-store'
         }),
-        fetchWithAuth<UserProfile>(`http://localhost:8080/api/users/${userId}/bio`, {
+        fetchWithAuth<UserProfile>(`/users/${userId}/bio`, {
             cache: 'no-store'
         }),
     ]);
 
-    if (!userResponse.ok) return undefined;
+    if (!userResponse.ok) throw new Error(userResponse.data.message);
+    if (!profileResponse.ok) throw new Error(profileResponse.data.message);
+    if (!bioResponse.ok) throw new Error(bioResponse.data.message);
 
     return { ...userResponse.data, ...profileResponse.data, ...bioResponse.data};
 }

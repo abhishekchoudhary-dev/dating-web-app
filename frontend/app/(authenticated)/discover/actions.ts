@@ -3,13 +3,13 @@
 import { fetchWithAuth } from "@/app/(authenticated)/actions";
 
 export async function matchUser(id: number) {
-    return await fetchWithAuth(`http://localhost:8080/api/connections/${id}/match`, {
+    return await fetchWithAuth(`/connections/${id}/match`, {
         method: 'POST',
     });
 }
 
 export async function dismissUser(id: number) {
-    return await fetchWithAuth(`http://localhost:8080/api/connections/${id}/dismiss`, {
+    return await fetchWithAuth(`/connections/${id}/dismiss`, {
         method: 'POST',
     });
 }
