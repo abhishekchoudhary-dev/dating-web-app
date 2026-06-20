@@ -3,8 +3,12 @@
 import Link from "next/link";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { SidebarGroup, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar"
+import {
+  SidebarGroup, SidebarMenu, SidebarMenuAction,
+  SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem
+} from "@/components/ui/sidebar"
 import { ChevronRightIcon } from "lucide-react"
+import { Badge } from "@/components/ui/badge";
 
 export function NavMain({
   items,
@@ -14,6 +18,7 @@ export function NavMain({
     url: string
     icon: React.ReactNode
     isActive?: boolean
+    badge?: number
     items?: {
       title: string
       url: string
@@ -56,6 +61,7 @@ export function NavMain({
                   </CollapsibleContent>
                 </>
               ) : null}
+              {item.badge ? <SidebarMenuBadge><Badge className="bg-pink-500">{item.badge}</Badge></SidebarMenuBadge> : null}
             </SidebarMenuItem>
           </Collapsible>
         ))}

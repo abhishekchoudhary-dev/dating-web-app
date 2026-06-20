@@ -3,7 +3,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import PageTitle from "@/components/PageTitle";
-import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
+import { fetchWithAuth, getAuthenticatedUser } from "@/app/(authenticated)/actions";
 import { Me } from "@/app/(authenticated)/types";
 import { cookies } from "next/headers";
 import GlobalWebSocketConnector from "@/components/realtime/GlobalWebSocketConnector";
@@ -14,9 +14,12 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
     const cookieStore = await cookies();
     const token = cookieStore.get('access_token')?.value ?? '';
 
+    const unreadRes = await fetchWithAuth<number>('/messages/unread');
+    const unreadTotal = unreadRes.ok ? unreadRes.data : 0;
+
     return (
         <SidebarProvider>
-            <AppSidebar user={user} />
+            <AppSidebar user={user} unreadTotal={unreadTotal} />
             <SidebarInset>
                 <header className="flex justify-between h-16 shrink-0 items-center gap-2">
                     <div className="flex items-center gap-2 px-4">

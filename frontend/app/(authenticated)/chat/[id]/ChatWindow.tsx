@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserIcon, SendIcon } from "lucide-react";
 import { useWebSocket } from "@/components/realtime/WebSocketContext";
+import { useRouter } from "next/navigation";
 
 type Message = {
     id?: number
@@ -48,6 +49,7 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
 
     // Use shared WebSocket from context
     const { client, isConnected } = useWebSocket();
+    const router = useRouter();
 
     //actual socket subscriptions. set up after connect and clean at the end
     useEffect(() => {
@@ -56,8 +58,8 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
         // Mark as read when chat opens
         fetch(`http://localhost:8080/api/messages/${otherUser.id}/read`, {
             method: 'POST',
-            credentials: 'include'
-        });
+            credentials: 'include',
+        }).then(() => router.refresh());
 
         const messagesSub = client.subscribe(`/user/${currentUserEmail}/queue/messages`, (frame) => {
             const message = JSON.parse(frame.body);
