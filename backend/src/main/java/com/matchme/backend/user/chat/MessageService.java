@@ -178,6 +178,10 @@ public class MessageService {
         return messageRepository.countUnreadFrom(otherUser, currentUser);
     }
 
+    public Long getAllUnreadCount(User currentUser) {
+        return messageRepository.countAllUnread(currentUser);
+    }
+
     @Transactional
     public void markAsRead(User currentUser, Long otherUserId) {
         User otherUser = userRepository.findById(otherUserId)

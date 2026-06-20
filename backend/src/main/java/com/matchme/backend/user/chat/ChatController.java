@@ -45,6 +45,11 @@ public class ChatController {
         return ResponseEntity.ok(messageService.getUnreadCount(user, userId));
     }
 
+    @GetMapping("/api/messages/unread")
+    public ResponseEntity<Long> getAllUnreadCount(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(messageService.getAllUnreadCount(user));
+    }
+
     //endpoint to mark messages as read
     @PostMapping("/api/messages/{userId}/read")
     public ResponseEntity<Void> markAsRead(
