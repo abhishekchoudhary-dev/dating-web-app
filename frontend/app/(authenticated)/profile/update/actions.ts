@@ -1,24 +1,20 @@
 "use server"
 
-import { cookies } from "next/headers";
 import { ProfileEditFormFields } from "@/app/(authenticated)/profile/update/types";
+import { fetchWithAuth } from "@/app/(authenticated)/actions";
+import { FullUser } from "@/app/(authenticated)/types";
 
 export async function updateProfile(data: ProfileEditFormFields) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('access_token')?.value;
-
     if (data.profilePictureFile) {
         const formData = new FormData();
         formData.append("file", data.profilePictureFile);
-        await fetch(`http://localhost:8080/api/me/profile-picture`, {
+        await fetchWithAuth(`/me/profile-picture`, {
             method: 'PUT',
-            headers: { Cookie: `access_token=${token}` },
             body: formData,
         });
     } else if (data.profilePictureLink === null) {
-        await fetch(`http://localhost:8080/api/me/profile-picture`, {
+        await fetchWithAuth(`/me/profile-picture`, {
             method: 'DELETE',
-            headers: { Cookie: `access_token=${token}` },
         });
     }
 
@@ -42,14 +38,14 @@ export async function updateProfile(data: ProfileEditFormFields) {
         }
     }
 
-    const response = await fetch(`http://localhost:8080/api/me`, {
+    const response = await fetchWithAuth<FullUser>(`/me`, {
         method: 'PUT',
-        headers: { Cookie: `access_token=${token}`, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
 
     if (!response.ok) {
-        const apiError = await response.json()
+        const apiError = response.data
         return {
             message: apiError.message,
             errors: apiError.errors ?? {}

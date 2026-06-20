@@ -2,31 +2,27 @@ import { MeBio, MeProfile, Me, Options, FullMe } from "@/app/(authenticated)/typ
 import { fetchWithAuth } from "@/app/(authenticated)/actions";
 
 export async function getOptions(): Promise<Options> {
-    const response = await fetchWithAuth<Options>(`http://localhost:8080/api/me/bio/options`, {
+    const response = await fetchWithAuth<Options>(`/me/bio/options`, {
         method: 'GET',
     })
+
+    if (!response.ok) throw new Error(response.data.message);
 
     return response.data;
 }
 
 export async function getAuthenticatedUserData(): Promise<FullMe> {
-    const [
-        { data: me },
-        { data: profile },
-        { data: bio }
-    ] = await Promise.all([
-        fetchWithAuth<Me>(`http://localhost:8080/api/me`, {
-            cache: 'no-store'
-        }),
-        fetchWithAuth<MeBio>(`http://localhost:8080/api/me/profile`, {
-            cache: 'no-store'
-        }),
-        fetchWithAuth<MeProfile>(`http://localhost:8080/api/me/bio`, {
-            cache: 'no-store'
-        }),
+    const [meRes, profileRes, bioRes] = await Promise.all([
+        fetchWithAuth<Me>(`/me`, { cache: 'no-store' }),
+        fetchWithAuth<MeProfile>(`/me/profile`, { cache: 'no-store' }),
+        fetchWithAuth<MeBio>(`/me/bio`, { cache: 'no-store' }),
     ]);
 
-    return { ...me, ...profile, ...bio};
+    if (!meRes.ok) throw new Error(meRes.data.message);
+    if (!profileRes.ok) throw new Error(profileRes.data.message);
+    if (!bioRes.ok) throw new Error(bioRes.data.message);
+
+    return { ...meRes.data, ...profileRes.data, ...bioRes.data };
 }
 
 export async function getProfileEditFormData() {

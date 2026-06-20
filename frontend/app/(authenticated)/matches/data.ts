@@ -3,22 +3,32 @@ import { FetchResponse, User, UserBio } from "@/app/(authenticated)/types";
 import { MatchedUser } from "@/app/(authenticated)/matches/types";
 
 export async function getMatchedUsers(): Promise<MatchedUser[]> {
-    const { data: matchesIds }: FetchResponse<number[]> = await fetchWithAuth<number[]>('http://localhost:8080/api/connections');
+    const matchesRes = await fetchWithAuth<number[]>('/connections');
+    if (!matchesRes.ok) throw new Error(matchesRes.data.message);
+    const matchesIds = matchesRes.data;
 
-    return await Promise.all(matchesIds.map(async (id: number): Promise<MatchedUser> => {
-        const [{data: user}, {data: bio},{data: unread},{data: lastMessageAt}] = await Promise.all([
-            fetchWithAuth<User>(`http://localhost:8080/api/users/${id}`),
-            fetchWithAuth<UserBio>(`http://localhost:8080/api/users/${id}/bio`),
-            fetchWithAuth<number>(`http://localhost:8080/api/messages/${id}/unread`),
-            fetchWithAuth<string>(`http://localhost:8080/api/messages/${id}/last`),
+    return await Promise.all(matchesIds.map(async (id): Promise<MatchedUser> => {
+        const [userRes, bioRes, unreadRes, lastMessageRes] = await Promise.all([
+            fetchWithAuth<User>(`/users/${id}`),
+            fetchWithAuth<UserBio>(`/users/${id}/bio`),
+            fetchWithAuth<number>(`/messages/${id}/unread`),
+            fetchWithAuth<string>(`/messages/${id}/last`),
         ]);
+
+        if (!userRes.ok) throw new Error(userRes.data.message);
+        if (!bioRes.ok) throw new Error(bioRes.data.message);
+
+        const user = userRes.data;
+        const bio = bioRes.data;
+        const unread = unreadRes.ok ? unreadRes.data : undefined;
+        const lastMessageAt = lastMessageRes.ok ? lastMessageRes.data : undefined;
 
         return {
             id,
-            name: user?.name ?? 'Unknown',
-            profilePictureLink: user?.profilePictureLink ?? null,
-            age: bio?.age ?? null,
-            location: bio?.location ?? null,
+            name: user.name,
+            profilePictureLink: user.profilePictureLink ?? null,
+            age: bio.age,
+            location: bio.location,
             unreadCount: unread ?? 0,
             lastMessageAt: lastMessageAt ?? null,
         };

@@ -4,10 +4,10 @@ import { cookies } from 'next/headers'
 import setCookieParser, { Cookie } from 'set-cookie-parser';
 import { redirect } from 'next/navigation';
 
-const BASE_URL = 'http://localhost:8080/api';
+import { API_BASE_URL } from "@/app/lib/config";
 
 export async function registerUser(form: any) {
-    const response = await fetch(`${BASE_URL}/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form }),
@@ -27,7 +27,7 @@ export async function registerUser(form: any) {
 }
 
 export async function loginUser(form: any) {
-    const response = await fetch(`${BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form }),
