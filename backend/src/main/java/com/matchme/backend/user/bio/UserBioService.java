@@ -2,6 +2,9 @@ package com.matchme.backend.user.bio;
 
 import com.matchme.backend.exception.ResourceNotFoundException;
 import com.matchme.backend.user.User;
+import com.matchme.backend.user.UserRepository;
+import com.matchme.backend.user.UserService;
+import com.matchme.backend.user.bio.dto.MeBioResponse;
 import com.matchme.backend.user.bio.dto.UserBioResponse;
 import com.matchme.backend.user.bio.enums.*;
 import jakarta.transaction.Transactional;
@@ -19,13 +22,25 @@ public class UserBioService {
     private final UserBioRepository userBioRepository;
     private final UserBioMapper userBioMapper;
 
+    private final UserRepository userRepository;
+    private final UserService userService;
+
     @Transactional
     public void createEmpty(User user) {
         userBioRepository.save(new UserBio(user));
     }
 
-    public UserBioResponse get(Long userId) {
+    public MeBioResponse getMe(Long userId) {
         UserBio bio = userBioRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("user bio not found for id: " + userId));
+        return userBioMapper.toMeResponse(bio);
+    }
+
+    public UserBioResponse get(Long userId, User authenticatedUser) {
+        UserBio bio = userBioRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("user bio not found for id: " + userId));
+        User user = bio.getUser();
+
+        if (!userService.areMatchedOrRecommended(user, authenticatedUser)) throw new ResourceNotFoundException("user bio not found for id: " + userId);
+
         return userBioMapper.toResponse(bio);
     }
 

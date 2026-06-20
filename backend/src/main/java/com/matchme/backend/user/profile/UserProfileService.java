@@ -2,6 +2,7 @@ package com.matchme.backend.user.profile;
 
 import com.matchme.backend.exception.ResourceNotFoundException;
 import com.matchme.backend.user.User;
+import com.matchme.backend.user.UserService;
 import com.matchme.backend.user.profile.dto.UserProfileResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
     private final UserProfileMapper userProfileMapper;
+    private final UserService userService;
 
     @Transactional
     public void createEmpty(User user) {
@@ -20,6 +22,15 @@ public class UserProfileService {
 
     public UserProfileResponse get(Long userId) {
         UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("user profile not found for id: " + userId));
+        return userProfileMapper.toResponse(profile);
+    }
+
+    public UserProfileResponse get(Long userId, User authenticatedUser) {
+        UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("user profile not found for id: " + userId));
+        User user = profile.getUser();
+
+        if (!userService.areMatchedOrRecommended(user, authenticatedUser)) throw new ResourceNotFoundException("user profile not found for id: " + userId);
+
         return userProfileMapper.toResponse(profile);
     }
 }

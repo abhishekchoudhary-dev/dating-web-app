@@ -1,7 +1,7 @@
 package com.matchme.backend.user;
 
 import com.matchme.backend.user.bio.UserBioService;
-import com.matchme.backend.user.bio.dto.UserBioResponse;
+import com.matchme.backend.user.bio.dto.MeBioResponse;
 import com.matchme.backend.user.bio.enums.UserBioOption;
 import com.matchme.backend.user.dto.*;
 import com.matchme.backend.user.profile.UserProfileService;
@@ -58,8 +58,8 @@ public class MeController {
 
     // BIO
     @GetMapping("/bio")
-    public ResponseEntity<UserBioResponse> getMeBio(@AuthenticationPrincipal User user) {
-        UserBioResponse bio = userBioService.get(user.getId());
+    public ResponseEntity<MeBioResponse> getMeBio(@AuthenticationPrincipal User user) {
+        MeBioResponse bio = userBioService.getMe(user.getId());
         return ResponseEntity.ok(bio);
     }
 
