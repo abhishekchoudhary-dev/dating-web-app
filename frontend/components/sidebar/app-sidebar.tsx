@@ -7,9 +7,16 @@ import { NavUser } from "@/components/sidebar/nav-user"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { HeartIcon, CompassIcon, UserIcon } from "lucide-react"
 import { Me } from "@/app/(authenticated)/types";
+import { useUnread } from "@/components/realtime/UnreadContext";
 
-const data = {
-  navMain: [
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  user: Me
+  unreadTotal?: number
+}
+
+export function AppSidebar({ user, unreadTotal, ...props }: AppSidebarProps) {
+  const { total } = useUnread();
+  const navMain = [
     {
       title: "Discover",
       url: "/discover",
@@ -19,6 +26,7 @@ const data = {
       title: "Matches",
       url: "/matches",
       icon: ( <HeartIcon/> ),
+      badge: total
     },
     {
       title: "My profile",
@@ -26,13 +34,7 @@ const data = {
       icon: ( <UserIcon/> ),
     },
   ]
-}
 
-type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-  user: Me
-}
-
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -52,7 +54,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
