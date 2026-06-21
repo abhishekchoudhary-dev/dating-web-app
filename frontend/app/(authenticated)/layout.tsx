@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import PageTitle from "@/components/PageTitle";
 import { fetchWithAuth, getAuthenticatedUser } from "@/app/(authenticated)/actions";
+import { UnreadProvider } from "@/app/(authenticated)/unread/UnreadContext";
 import { Me } from "@/app/(authenticated)/types";
 import { cookies } from "next/headers";
 import GlobalWebSocketConnector from "@/components/realtime/GlobalWebSocketConnector";
@@ -18,26 +19,29 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
     const unreadTotal = unreadRes.ok ? unreadRes.data : 0;
 
     return (
-        <SidebarProvider>
-            <AppSidebar user={user} unreadTotal={unreadTotal} />
-            <SidebarInset>
-                <header className="flex justify-between h-16 shrink-0 items-center gap-2">
-                    <div className="flex items-center gap-2 px-4">
-                        <SidebarTrigger className="-ml-1" />
-                        <Separator
-                            orientation="vertical"
-                            className="mr-2 data-vertical:h-4 data-vertical:self-auto"
-                        />
-                    </div>
+        <GlobalWebSocketConnector token={token}>
+            <UnreadProvider currentUserEmail={user.email} initialTotal={unreadTotal}>
+                <SidebarProvider>
+                    <AppSidebar user={user} unreadTotal={unreadTotal} />
+                    <SidebarInset>
+                        <header className="flex justify-between h-16 shrink-0 items-center gap-2">
+                            <div className="flex items-center gap-2 px-4">
+                                <SidebarTrigger className="-ml-1" />
+                                <Separator
+                                    orientation="vertical"
+                                    className="mr-2 data-vertical:h-4 data-vertical:self-auto"
+                                />
+                            </div>
 
-                    <PageTitle />
-                </header>
-                <GlobalWebSocketConnector token={token}>
-                    <div className="flex justify-center p-2 mx-auto max-w-4xl w-full">
-                        { children }
-                    </div>
-                </GlobalWebSocketConnector>
-            </SidebarInset>
-        </SidebarProvider>
+                            <PageTitle />
+                        </header>
+
+                        <div className="flex justify-center p-2 mx-auto max-w-4xl w-full">
+                            { children }
+                        </div>
+                    </SidebarInset>
+                </SidebarProvider>
+            </UnreadProvider>
+        </GlobalWebSocketConnector>
     )
 }
