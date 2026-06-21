@@ -7,7 +7,7 @@ import { NavUser } from "@/components/sidebar/nav-user"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { HeartIcon, CompassIcon, UserIcon } from "lucide-react"
 import { Me } from "@/app/(authenticated)/types";
-import { useUnread } from "@/app/(authenticated)/unread/UnreadContext";
+import { useUnread } from "@/components/realtime/UnreadContext";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   user: Me

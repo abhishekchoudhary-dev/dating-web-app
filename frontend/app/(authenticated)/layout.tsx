@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import PageTitle from "@/components/PageTitle";
 import { fetchWithAuth, getAuthenticatedUser } from "@/app/(authenticated)/actions";
-import { UnreadProvider } from "@/app/(authenticated)/unread/UnreadContext";
+import { UnreadProvider } from "@/components/realtime/UnreadContext";
 import { Me } from "@/app/(authenticated)/types";
 import { cookies } from "next/headers";
 import GlobalWebSocketConnector from "@/components/realtime/GlobalWebSocketConnector";
