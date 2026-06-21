@@ -142,9 +142,9 @@ export default function DiscoverClient({ users }: DiscoverClientProps) {
                         <Button
                             onClick={handleMatch}
                             disabled={loading}
-                            className="flex-1 py-5 text-base gap-2 cursor-pointer hover:bg-primary hover:opacity-90">
+                            className="flex-1 py-5 text-base gap-2 cursor-pointer bg-pink-500 hover:bg-pink-600 text-white">
                             <HeartIcon className="size-5" />
-                            Match
+                            Like
                         </Button>
                     </div>
                 </CardContent>
