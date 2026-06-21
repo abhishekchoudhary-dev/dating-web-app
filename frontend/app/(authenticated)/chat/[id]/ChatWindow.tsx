@@ -59,7 +59,7 @@ export default function ChatWindow({ otherUser, initialMessages, token, currentU
         fetch(`http://localhost:8080/api/messages/${otherUser.id}/read`, {
             method: 'POST',
             credentials: 'include',
-        }).then(() => router.refresh());
+        })
 
         const messagesSub = client.subscribe(`/user/${currentUserEmail}/queue/messages`, (frame) => {
             const message = JSON.parse(frame.body);
