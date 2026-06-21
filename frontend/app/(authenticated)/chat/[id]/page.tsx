@@ -5,8 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 
 export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    console.log('Chat page id:', id);  
+    const { id } = await params;  
     const userId = parseInt(id);
     const chatData = await getChatData(userId);
 

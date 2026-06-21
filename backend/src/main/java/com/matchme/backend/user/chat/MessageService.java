@@ -57,8 +57,6 @@ public class MessageService {
 
         MessageResponse response = toResponse(message);
 
-        log.info("Publishing to user: {}", managedReceiver.getEmail());
-
         messagingTemplate.convertAndSendToUser(
                 managedReceiver.getEmail(),
                 "/queue/messages",
@@ -89,16 +87,6 @@ public class MessageService {
     //put in map when someone comes online irrespective of status
     public void trackUserOnline(Long userId) {
         onlineUsers.put(userId, true);
-    }
-
-    //presently unused as now we have direct function calls from web socket event listener
-    public void userConnected(Long userId) {
-    onlineUsers.put(userId, true);
-    userRepository.findById(userId).ifPresent(user -> {
-        if (!user.isHideOnlineStatus()) {
-            broadcastStatus(userId, true);
-        }
-    });
     }
 
     public void userDisconnected(Long userId) {
@@ -165,11 +153,7 @@ public class MessageService {
         
         Collections.reverse(messages);
         return messages;
-
-        //return messageRepository.findConversation(currentUser, otherUser)
-        //        .stream()
-        //        .map(this::toResponse)
-        //        .collect(Collectors.toList());
+   
     }
 
     public Long getUnreadCount(User currentUser, Long otherUserId) {
