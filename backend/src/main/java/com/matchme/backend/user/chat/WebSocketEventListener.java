@@ -34,7 +34,7 @@ public class WebSocketEventListener {
                 if (freshUser != null){
                     //if there is user we must add to online map
                     messageService.trackUserOnline(user.getId());
-                    //now hide broadcasting behind a check
+                    //user online status only broadcasted if they want to
                     if (!freshUser.isHideOnlineStatus()){
                         messageService.broadcastStatus(user.getId(),true);
                     }

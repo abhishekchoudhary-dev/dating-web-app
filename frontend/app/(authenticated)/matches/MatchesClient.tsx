@@ -68,7 +68,7 @@ export default function MatchesClient({ initialMatches, token, currentUserEmail 
                                     </AvatarFallback>
                                 </Avatar>
                                 {/* Online dot rendered from state */}
-                                <span className={`absolute bottom-0 right-1 size-3 rounded-full border-[3px] bg-background ${onlineUsers.has(match.id) ? 'border-green-500 bg-green-200' : 'border-gray-400 bg-gray-200'}`} />
+                                <span className={`absolute bottom-0 right-1 size-3 rounded-full border-[3px] bg-background ${onlineUsers.has(match.id) ? 'border-green-500 bg-green-300' : 'border-gray-400 bg-gray-200'}`} />
                             </div>
 
                             <div className="flex-1 min-w-0">
