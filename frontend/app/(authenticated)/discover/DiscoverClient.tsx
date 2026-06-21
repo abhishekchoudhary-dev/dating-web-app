@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { MapPinIcon, XIcon, HeartIcon, UserIcon } from "lucide-react";
 import { matchUser, dismissUser } from "./actions";
 import { RecommendedUser } from "@/app/(authenticated)/discover/types";
+import { toast } from "sonner";
 
 type DiscoverClientProps = {
     users: RecommendedUser[]
@@ -23,9 +24,28 @@ export default function DiscoverClient({ users }: DiscoverClientProps) {
     const handleMatch = async() => {
         //send MATCHED to backend to create connection
         setLoading(true);
-        await matchUser(currentUser.id);
+        const status = await matchUser(currentUser.id);
         setLoading(false);
+
+        if (status==="MATCHED"){
+            toast("💘 It's a Match!", {
+            description: `You and ${currentUser.name} liked each other!`,
+            duration: 4000,
+            style: {
+                padding: '32px',
+                fontSize: '18px',
+                textAlign: 'center',
+                minWidth: '350px',
+            },
+        });
+        // Small delay so user sees the toast before moving to next card
+        setTimeout(() => {
+            setCurrentIndex(prev => prev + 1);
+        }, 1500);
+        }
+        else{
         setCurrentIndex(prev => prev + 1);
+        }
     }
 
     const handleDismiss = async() => {
@@ -54,7 +74,7 @@ export default function DiscoverClient({ users }: DiscoverClientProps) {
                 <div className="relative">
                     <div className="h-50 bg-white from-primary/20 to-primary/5 flex items-center justify-center">
                         <Avatar className="size-50 border-4 border-background shadow-md">
-                            <AvatarImage src={currentUser.profilePictureLink ?? ''} alt={currentUser.name} />
+                            <AvatarImage src={currentUser.profilePictureLink ?? undefined} alt={currentUser.name} />
                              <AvatarFallback className="text-4xl">
                                 <UserIcon size={50} />
                             </AvatarFallback>
@@ -122,9 +142,9 @@ export default function DiscoverClient({ users }: DiscoverClientProps) {
                         <Button
                             onClick={handleMatch}
                             disabled={loading}
-                            className="flex-1 py-5 text-base gap-2 cursor-pointer hover:bg-primary hover:opacity-90">
+                            className="flex-1 py-5 text-base gap-2 cursor-pointer bg-pink-500 hover:bg-pink-600 text-white">
                             <HeartIcon className="size-5" />
-                            Match
+                            Like
                         </Button>
                     </div>
                 </CardContent>

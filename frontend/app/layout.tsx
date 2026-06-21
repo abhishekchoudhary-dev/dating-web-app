@@ -21,7 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={cn("h-full", "antialiased", "font-sans", inter.variable)}>
         <body>
             <TooltipProvider>{children}</TooltipProvider>
-            <Toaster />
+            <Toaster position="top-center" />
         </body>
     </html>
   );
