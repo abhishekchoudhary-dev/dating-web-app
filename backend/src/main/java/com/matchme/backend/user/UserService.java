@@ -166,6 +166,11 @@ public class UserService {
         boolean areMatched = connectionRepository.findBetweenUsersByStatus(target.getId(), requester.getId(), ConnectionStatus.MATCHED).isPresent();
         if (areMatched) return true;
 
+        // Check if pending in either direction — needed for likes page
+        boolean arePending = connectionRepository.findBetweenUsersByStatus(
+        target.getId(), requester.getId(), ConnectionStatus.PENDING).isPresent();
+        if (arePending) return true;
+
         // Check if requested user is recommended for the authenticated user
         return recommendationService.getRecommendations(requester).contains(target.getId());
     }

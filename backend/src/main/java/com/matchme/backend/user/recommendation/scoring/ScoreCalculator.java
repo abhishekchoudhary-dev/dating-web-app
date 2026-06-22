@@ -9,7 +9,8 @@ import com.matchme.backend.user.bio.UserBio;
 public class ScoreCalculator{
     private final InterestScoreCalculator interestScoreCalculator;
     private final LanguageScoreCalculator languageScoreCalculator;
-    private final LocationScoreCalculator cityScoreCalculator;
+    //TODO 
+    //private final LocationScoreCalculator cityScoreCalculator;
 
     public int calculate(UserBio currentUser, UserBio candidate){
         int score = 0;
@@ -21,9 +22,9 @@ public class ScoreCalculator{
         score += languageScoreCalculator.calculate
         (currentUser.getLanguages(),candidate.getLanguages()
         );
-        score += cityScoreCalculator.calculate
-        (currentUser.getLocation(),candidate.getLocation()
-        );
+        //score += cityScoreCalculator.calculate
+        //(currentUser.getLocation(),candidate.getLocation()
+        //);
 
         return score;
 
