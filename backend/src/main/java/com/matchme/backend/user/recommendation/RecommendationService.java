@@ -51,6 +51,8 @@ public class RecommendationService {
                 .filter(b -> matchesGenderPreference(currentBio, b))
                 // Filter 2 — age range preference
                 .filter(b -> matchesAgePreference(currentBio, b))
+                // Location must match for basic build
+                .filter(b -> matchesLocation(currentBio, b))  
                 // Score each candidate
                 .map(b -> new ScoredBio(b, scoreCalculator.calculate(currentBio, b)))
                 // Only include candidates with score > 10 to exclude bad match
@@ -77,6 +79,11 @@ public class RecommendationService {
         if (current.getPreferenceAgeMin() != null && candidate.getAge() < current.getPreferenceAgeMin()) return false;
         if (current.getPreferenceAgeMax() != null && candidate.getAge() > current.getPreferenceAgeMax()) return false;
         return true;
+    }
+
+    private boolean matchesLocation(UserBio current, UserBio candidate) {
+    if (current.getLocation() == null || candidate.getLocation() == null) return true;
+    return current.getLocation().equalsIgnoreCase(candidate.getLocation());
     }
 
     // Inner class to hold profile and score together
