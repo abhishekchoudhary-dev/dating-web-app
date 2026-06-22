@@ -53,8 +53,8 @@ public class RecommendationService {
                 .filter(b -> matchesAgePreference(currentBio, b))
                 // Score each candidate
                 .map(b -> new ScoredBio(b, scoreCalculator.calculate(currentBio, b)))
-                // Only include candidates with score > 0
-                .filter(sb -> sb.score > 0)
+                // Only include candidates with score > 10 to exclude bad match
+                .filter(sb -> sb.score > 10)
                 // Sort by score descending
                 .sorted(Comparator.comparingInt(ScoredBio::getScore).reversed())
                 // Take max 10

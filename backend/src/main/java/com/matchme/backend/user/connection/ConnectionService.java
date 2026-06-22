@@ -7,6 +7,8 @@ import com.matchme.backend.user.connection.enums.ConnectionStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import java.util.Map;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,7 @@ public class ConnectionService {
 
     private final ConnectionRepository connectionRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public ConnectionStatus match(User currentUser, Long targetUserId) {
@@ -60,6 +63,13 @@ public class ConnectionService {
                 .status(ConnectionStatus.PENDING)
                 .build();
         connectionRepository.save(connection);
+
+        // notify target user saving new PENDING connection
+        messagingTemplate.convertAndSendToUser(
+        targetUser.getEmail(),
+        "/queue/likes",
+        Map.of("senderId", currentUser.getId())
+        );
         return ConnectionStatus.PENDING;
     }
 
@@ -170,6 +180,19 @@ public class ConnectionService {
                 connectionRepository.save(newConnection);
                 }
         }
+    }
+
+    //get the pending likes for card
+    public List<Long> getPendingLikes(User currentUser) {
+    return connectionRepository.findByReceiverAndStatus(currentUser, ConnectionStatus.PENDING)
+            .stream()
+            .map(c -> c.getRequester().getId())
+            .collect(Collectors.toList());
+    }
+    
+    //get counts for front end
+    public Long getPendingLikesCount(User user) {
+    return connectionRepository.countPendingLikes(user);
     }
 
 }

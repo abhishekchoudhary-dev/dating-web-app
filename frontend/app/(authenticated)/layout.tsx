@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import PageTitle from "@/components/PageTitle";
 import { fetchWithAuth, getAuthenticatedUser } from "@/app/(authenticated)/actions";
 import { UnreadProvider } from "@/components/realtime/UnreadContext";
+import { LikesProvider } from "@/components/realtime/LikesContext"
 import { Me } from "@/app/(authenticated)/types";
 import { cookies } from "next/headers";
 import GlobalWebSocketConnector from "@/components/realtime/GlobalWebSocketConnector";
@@ -18,12 +19,16 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
     const unreadRes = await fetchWithAuth<number>('/messages/unread');
     const unreadTotal = unreadRes.ok ? unreadRes.data : 0;
 
+    const likesRes = await fetchWithAuth<number>('/connections/pending/count');
+    const likesTotal = likesRes.ok ? likesRes.data : 0;
+
     return (
         <GlobalWebSocketConnector token={token}>
             <UnreadProvider currentUserEmail={user.email} initialTotal={unreadTotal}>
-                <SidebarProvider>
-                    <AppSidebar user={user} unreadTotal={unreadTotal} />
-                    <SidebarInset>
+                <LikesProvider currentUserEmail={user.email} initialTotal={likesTotal}>
+                    <SidebarProvider>
+                        <AppSidebar user={user} unreadTotal={unreadTotal} />
+                        <SidebarInset>
                         <header className="flex justify-between h-16 shrink-0 items-center gap-2">
                             <div className="flex items-center gap-2 px-4">
                                 <SidebarTrigger className="-ml-1" />
@@ -36,11 +41,12 @@ export default async function AuthenticatedLayout({ children }: Readonly<{ child
                             <PageTitle />
                         </header>
 
-                        <div className="flex justify-center p-2 mx-auto max-w-4xl w-full">
-                            { children }
-                        </div>
-                    </SidebarInset>
-                </SidebarProvider>
+                            <div className="flex justify-center p-2 mx-auto max-w-4xl w-full">
+                                { children }
+                            </div>
+                        </SidebarInset>
+                    </SidebarProvider>
+                </LikesProvider>
             </UnreadProvider>
         </GlobalWebSocketConnector>
     )
