@@ -72,9 +72,9 @@ export default function Likes({ users: initialUsers }: Props) {
 
     return (
         <div className="flex flex-col items-center w-full max-w-sm mx-auto gap-6">
-            <Card className="w-full max-h-[85vh] overflow-hidden shadow-lg">
+            <Card className="w-full max-h-[85vh] overflow-hidden shadow-lg border-2 border-pink-200 bg-pink-50 dark:bg-pink-950">
                 <div className="relative">
-                    <div className="h-50 bg-white from-primary/20 to-primary/5 flex items-center justify-center">
+                    <div className="h-50 bg-pink-50 dark:bg-pink-950 from-primary/20 to-primary/5 flex items-center justify-center">
                         <Avatar className="size-50 border-4 border-background shadow-md">
                             <AvatarImage src={currentUser.profilePictureLink ?? undefined} alt={currentUser.name} />
                             <AvatarFallback className="text-4xl">
@@ -91,7 +91,12 @@ export default function Likes({ users: initialUsers }: Props) {
                             {currentUser.age && (
                                 <span className="text-muted-foreground font-normal text-xl">, {currentUser.age}</span>
                             )}
+                        <span className="ml-2 inline-flex items-center align-middle">
+                            <HeartIcon className="size-5 text-pink-500 fill-pink-500" />
+                        </span>
+                        <span className="ml-2 text-sm align-middle font-normal bg-pink-400 text-white px-2 py-1 rounded-full">Liked you</span>
                         </h2>
+                        
                         {currentUser.location && (
                             <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1 font-bold">
                                 <MapPinIcon className="size-4" />
