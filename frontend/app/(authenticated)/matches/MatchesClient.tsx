@@ -59,51 +59,52 @@ export default function MatchesClient({ initialMatches, token, currentUserEmail 
                 <h1 className="text-2xl font-bold">Your Matches</h1>
                 <div className="flex flex-col gap-3">
                     {matches.map((match) => (
-                        <div key={match.id} className="flex items-center gap-3 p-1 rounded-lg border bg-card hover:shadow-sm transition-shadow">
-                            <div className="relative shrink-0 w-fit">
-                                <Avatar className="size-24">
-                                    <AvatarImage src={match.profilePictureLink ?? ''} alt={match.name} />
-                                    <AvatarFallback>
-                                        <UserIcon size={24} />
-                                    </AvatarFallback>
-                                </Avatar>
-                                {/* Online dot rendered from state */}
-                                <span className={`absolute bottom-0 right-1 size-3 rounded-full border-[3px] bg-background ${onlineUsers.has(match.id) ? 'border-green-500 bg-green-300' : 'border-gray-400 bg-gray-200'}`} />
-                            </div>
+                        <div key={match.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-2 rounded-lg border bg-card hover:shadow-sm transition-shadow">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="relative shrink-0 w-fit">
+                                    <Avatar className="size-24">
+                                        <AvatarImage src={match.profilePictureLink ?? ''} alt={match.name} />
+                                        <AvatarFallback>
+                                            <UserIcon size={24} />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span className={`absolute bottom-0 right-1 size-3 rounded-full border-[3px] bg-background ${onlineUsers.has(match.id) ? 'border-green-500 bg-green-300' : 'border-gray-400 bg-gray-200'}`} />
+                                </div>
 
-                            <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-base">
-                                    {match.name}
-                                    {match.age && (
-                                        <span className="text-muted-foreground font-normal">, {match.age}</span>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-semibold text-base">
+                                        {match.name}
+                                        {match.age && (
+                                            <span className="text-muted-foreground font-normal">, {match.age}</span>
+                                        )}
+                                    </h3>
+                                    {match.location && (
+                                        <div className="flex items-center font-bold gap-1 text-sm text-muted-foreground">
+                                            <MapPinIcon className="size-3" />
+                                            {match.location}
+                                        </div>
                                     )}
-                                </h3>
-                                {match.location && (
-                                    <div className="flex items-center font-bold gap-1 text-sm text-muted-foreground">
-                                        <MapPinIcon className="size-3" />
-                                        {match.location}
-                                    </div>
-                                )}
-                                {match.lastMessageAt && (
-                                    <p className="text-xs mt-3 text-muted-foreground">
-                                        Last message at <span suppressHydrationWarning>
-                                            {new Date(match.lastMessageAt).toLocaleDateString([], { day: '2-digit', month: 'short' })}
-                                            {' '}
-                                            {new Date(match.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </p>
-                                )}
+                                    {match.lastMessageAt && (
+                                        <p className="text-xs mt-3 text-muted-foreground">
+                                            Last message at <span suppressHydrationWarning>
+                                                {new Date(match.lastMessageAt).toLocaleDateString([], { day: '2-digit', month: 'short' })}
+                                                {' '}
+                                                {new Date(match.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </p>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 shrink-0">
-                                <Link href={`/profile/${match.id}`}>
-                                    <Button variant="outline" size="sm" className="gap-1 mr-2 py-5 px-4 cursor-pointer">
+                            <div className="flex items-center gap-2 w-full sm:w-auto sm:shrink-0">
+                                <Link href={`/profile/${match.id}`} className="flex-1 sm:flex-none">
+                                    <Button variant="outline" size="sm" className="gap-1 w-full sm:w-auto mr-2 py-5 px-4 cursor-pointer">
                                         <UserCircleIcon className="size-4" />
                                         View Full Profile
                                     </Button>
                                 </Link>
-                                <Link href={`/chat/${match.id}`}>
-                                    <Button size="sm" className="relative gap-1 cursor-pointer py-5 mr-2 px-4 bg-pink-500 hover:bg-pink-600 text-white">
+                                <Link href={`/chat/${match.id}`} className="flex-1 sm:flex-none">
+                                    <Button size="sm" className="relative gap-1 cursor-pointer w-full sm:w-auto py-5 mr-2 px-4 bg-pink-500 hover:bg-pink-600 text-white">
                                         <MessageCircleIcon className="size-4" />
                                         Chat
                                         {match.unreadCount > 0 && (
