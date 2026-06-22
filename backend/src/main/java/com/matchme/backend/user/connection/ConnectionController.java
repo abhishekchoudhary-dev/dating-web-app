@@ -30,6 +30,17 @@ public class ConnectionController {
         return ResponseEntity.ok(connectionService.match(user, id));
     }
 
+    //get pending likes
+    @GetMapping("/pending")
+    public ResponseEntity<List<Long>> getPendingLikes(@AuthenticationPrincipal User user) {
+    return ResponseEntity.ok(connectionService.getPendingLikes(user));
+    }
+    //get pending count likes tab
+    @GetMapping("/pending/count")
+    public ResponseEntity<Long> getPendingLikesCount(@AuthenticationPrincipal User user) {
+    return ResponseEntity.ok(connectionService.getPendingLikesCount(user));
+    }
+
     //to dismiss a discovery to not have them recommended again
     @PostMapping("/{id}/dismiss")
     public ResponseEntity<ConnectionStatus> dismiss(

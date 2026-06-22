@@ -5,9 +5,10 @@ import * as React from "react"
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import { HeartIcon, CompassIcon, UserIcon } from "lucide-react"
+import { HeartIcon, CompassIcon, UserIcon, HeartHandshakeIcon } from "lucide-react"
 import { Me } from "@/app/(authenticated)/types";
 import { useUnread } from "@/components/realtime/UnreadContext";
+import { useLikes } from "@/components/realtime/LikesContext";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   user: Me
@@ -16,11 +17,18 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 
 export function AppSidebar({ user, unreadTotal, ...props }: AppSidebarProps) {
   const { total } = useUnread();
+  const { total: likesTotal } = useLikes();
   const navMain = [
     {
       title: "Discover",
       url: "/discover",
       icon: ( <CompassIcon /> ),
+    },
+    {
+      title: "Likes",
+      url: "/likes",
+      icon: <HeartHandshakeIcon />,
+      badge: likesTotal
     },
     {
       title: "Matches",
