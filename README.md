@@ -435,10 +435,10 @@ Distance    → between 1 and 100
 
 ## Project Structure
 
-- The whole project lives inside the info-screens folder after cloning the repository. The structure inside the folder is as follow:-
+- The whole project lives inside the web folder after cloning the repository. The structure inside the folder is as follow:-
 
 ```
-matchme/
+web/
 ├── backend/                          # Spring Boot Java backend
 │   ├── src/main/java/com/matchme/backend/
 │   │   ├── BackendApplication.java   # Spring Boot entry point
@@ -544,9 +544,16 @@ matchme/
     │   │   ├── types.ts              # Shared TypeScript types
     │   │   ├── discover/             # Recommendation cards
     │   │   │   ├── page.tsx
-    │   │   │   ├── Discover.tsx      # Client component with match/dismiss
+    │   │   │   ├── Discover.tsx      # Client component with like/dismiss
+    │   │   │   ├── data.ts
+    │   │   │   ├── actions.ts
+    |   │   │   └── types.ts
+    |   │   ├── likes/             # Recommendation cards
+    │   │   │   ├── page.tsx
+    │   │   │   ├── LikesClient.tsx      # Client component with match/dismiss
     │   │   │   ├── data.ts
     │   │   │   └── actions.ts
+    |   │   │   └── types.ts
     │   │   ├── matches/              # Matched users list
     │   │   │   ├── page.tsx
     │   │   │   ├── MatchesClient.tsx # Real time unread and online status
