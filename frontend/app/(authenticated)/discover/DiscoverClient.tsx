@@ -9,6 +9,7 @@ import { MapPinIcon, XIcon, HeartIcon, UserIcon } from "lucide-react";
 import { matchUser, dismissUser } from "./actions";
 import { RecommendedUser } from "@/app/(authenticated)/discover/types";
 import { toast } from "sonner";
+import { useLikes } from "@/components/realtime/LikesContext";
 
 type DiscoverClientProps = {
     users: RecommendedUser[]
@@ -18,6 +19,7 @@ export default function DiscoverClient({ users }: DiscoverClientProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const currentUser = users[currentIndex];
+    const { refresh } = useLikes(); //to sync with likes page
 
     const [loading, setLoading] = useState(false);
 
@@ -26,6 +28,7 @@ export default function DiscoverClient({ users }: DiscoverClientProps) {
         setLoading(true);
         const status = await matchUser(currentUser.id);
         setLoading(false);
+        refresh(); 
 
         if (status==="MATCHED"){
             toast("💘 It's a Match!", {
@@ -53,6 +56,7 @@ export default function DiscoverClient({ users }: DiscoverClientProps) {
         setLoading(true);
         await dismissUser(currentUser.id);
         setLoading(false);
+        refresh(); //update likes count in sidebar
         setCurrentIndex(prev => prev + 1);
     }
 
