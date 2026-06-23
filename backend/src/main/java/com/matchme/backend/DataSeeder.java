@@ -36,7 +36,7 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     @SuppressWarnings("unchecked")
-    private void seedUsers() {
+    public void seedUsers() {
 
         String[] maleNames = {
             "James", "Oliver", "Harry", "Jack", "George",
@@ -141,7 +141,7 @@ public class DataSeeder implements ApplicationRunner {
                 return;
             }
 
-            // Register — creates User with empty UserProfile and UserBio
+            // Register — creates User with empty user profile and bio
             authService.register(new RegisterRequest(email, password));
 
             // Find saved user
