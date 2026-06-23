@@ -433,6 +433,43 @@ Distance    → between 1 and 100
 - User cannot chat with themselves
 
 
+## Database Deletion and Reseeding
+
+The seeder runs on every start up and seeds the database with 100 test users. However, for testing purposes you can delete or reseed the database as follows:- 
+
+- To delete or reseed (deletes and seeds again) the database you can use the following methods:-
+
+### Admin Panel
+```bash
+Visit http://localhost:3000/admin in your browser to access the admin panel.
+
+# Buttons:-
+Clear Database — removes all users, connections and messages
+Reseed Database — clears database and then creates 100 fresh test users
+```
+
+### Admin API endpoint
+
+- Alternatively use curl commands directly:
+```bash
+#Clear all data
+curl -X DELETE http://localhost:8080/api/admin/clear
+
+# Clear and reseed with 100 users
+curl -X POST http://localhost:8080/api/admin/reseed
+```
+
+⚠️ **Important** — Clear Cookies Before Resetting
+If you are going to reset or reseed the database you must clear your browser cookies first otherwise you will be stuck as browser will hold JWT cookie for a user that does not exist.
+
+Steps:
+
+- Press F12 → Application tab → Cookies → http://localhost:3000
+- Delete the access_token cookie
+- Then reset the database via admin panel or curl
+- Register or login with a fresh account
+
+
 ## Project Structure
 
 - The whole project lives inside the web folder after cloning the repository. The structure inside the folder is as follow:-
