@@ -169,6 +169,8 @@ mvn -version   # should show v3.9.x.
 CREATE DATABASE web;
 CREATE USER admin WITH PASSWORD 'admin';
 GRANT ALL PRIVILEGES ON DATABASE web TO admin;
+\c web
+GRANT ALL ON SCHEMA public TO admin;
 ```
 
 ##### For Linux
@@ -185,6 +187,8 @@ sudo -u postgres psql
 CREATE DATABASE web;
 CREATE USER admin WITH PASSWORD 'admin';
 GRANT ALL PRIVILEGES ON DATABASE web TO admin;
+\c web
+GRANT ALL ON SCHEMA public TO admin;
 \q
 ```
 
@@ -204,6 +208,8 @@ sudo -u postgres psql #if downloaded
 CREATE DATABASE web;
 CREATE USER admin WITH PASSWORD 'admin';
 GRANT ALL PRIVILEGES ON DATABASE web TO admin;
+\c web
+GRANT ALL ON SCHEMA public TO admin;
 \q
 ```
 
