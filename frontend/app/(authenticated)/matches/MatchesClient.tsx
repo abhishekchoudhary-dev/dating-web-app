@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MapPinIcon, UserIcon, MessageCircleIcon, UserCircleIcon } from "lucide-react";
 import Link from "next/link";
 import RealtimeListener from "@/components/realtime/RealtimeListener";
 import { MatchedUser } from "./types";
+import { useUnread } from "@/components/realtime/UnreadContext";
 
 type Props = {
     initialMatches: MatchedUser[]
@@ -17,6 +18,8 @@ type Props = {
 export default function MatchesClient({ initialMatches, token, currentUserEmail }: Props) {
     const [matches, setMatches] = useState<MatchedUser[]>(initialMatches);
     const [onlineUsers, setOnlineUsers] = useState<Set<number>>(new Set());
+
+    const { refresh } = useUnread();
 
     //handles unread message updates
     const handleUnreadUpdate = (senderId: number, count: number) => {
@@ -47,6 +50,12 @@ export default function MatchesClient({ initialMatches, token, currentUserEmail 
         });
     };
 
+    // realtime update on unmartching
+    const handleUnmatched = (userId: number) => {
+        setMatches(prev => prev.filter(match => match.id !== userId));
+        refresh();
+    };
+
     return (
         <>
             <RealtimeListener
@@ -54,6 +63,7 @@ export default function MatchesClient({ initialMatches, token, currentUserEmail 
                 matchIds={matches.map(m => m.id)}
                 onUnreadUpdate={handleUnreadUpdate}
                 onStatusUpdate={handleStatusUpdate}
+                onUnmatched={handleUnmatched}
             />
             <div className="w-full space-y-4">
                 <h1 className="text-2xl font-bold">Your Matches</h1>

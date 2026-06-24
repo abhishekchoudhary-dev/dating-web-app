@@ -12,6 +12,7 @@ import { unmatchUser } from "@/app/(authenticated)/matches/actions";
 import OnlineStatusListener from "@/components/realtime/OnlineStatusListener";
 import { getAuthenticatedUser } from "@/app/(authenticated)/actions";
 import { redirect } from "next/navigation";
+import UnmatchButton from "./UnmatchButton";
 
 export const metadata: Metadata = {
     title: 'Profile',
@@ -84,12 +85,14 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
                                 Chat
                             </Button>
                         </Link>
+                        <UnmatchButton userId={user.id} />
+                        {/*}
                         <form action={unmatchUser.bind(null, Number(user.id))}>
-                            <Button className="cursor-pointer py-5 px-10" variant="outline" type="submit">
+                            <Button className="cursor-pointer py-5 px-10" variant="outline" type="submit">                               
                                 <UserX size={15} />
                                 Unmatch
                             </Button>
-                        </form>
+                        </form>*/}
                     </>
                 )}
             </div>
