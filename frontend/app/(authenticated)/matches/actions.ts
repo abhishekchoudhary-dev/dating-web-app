@@ -9,5 +9,5 @@ export async function unmatchUser(userId: number) {
         method: 'DELETE'
     });
     revalidatePath('/matches');
-    redirect('/matches');
+    //redirect('/matches');
 }

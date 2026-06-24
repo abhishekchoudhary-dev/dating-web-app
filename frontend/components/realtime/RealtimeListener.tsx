@@ -8,9 +8,10 @@ type Props = {
     matchIds: number[]
     onUnreadUpdate: (senderId: number, count: number) => void
     onStatusUpdate: (userId: number, online: boolean) => void
+    onUnmatched: (userId:number) => void
 }
 
-export default function RealtimeListener({ currentUserEmail, matchIds, onUnreadUpdate, onStatusUpdate }: Props) {
+export default function RealtimeListener({ currentUserEmail, matchIds, onUnreadUpdate, onStatusUpdate, onUnmatched}: Props) {
     const { client, isConnected } = useWebSocket();
 
     useEffect(() => {
@@ -35,6 +36,13 @@ export default function RealtimeListener({ currentUserEmail, matchIds, onUnreadU
             }
         });
 
+        // Subscribe to unmatch notifications
+        const unmatchSub = client.subscribe(`/user/${currentUserEmail}/queue/unmatched`, (frame) => {
+            const data = JSON.parse(frame.body);
+            onUnmatched(data.userId);
+        });
+
+
         // Request current status for all matches
         matchIds.forEach(id => {
             client.publish({
@@ -47,6 +55,7 @@ export default function RealtimeListener({ currentUserEmail, matchIds, onUnreadU
             unreadSub.unsubscribe();
             statusBroadcastSub.unsubscribe();
             statusDirectSub.unsubscribe();
+            unmatchSub.unsubscribe()
         };
     }, [isConnected]);
 
