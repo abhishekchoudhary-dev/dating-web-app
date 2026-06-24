@@ -178,8 +178,15 @@ public class ConnectionService {
                         .status(ConnectionStatus.DISMISSED)
                         .build();
                 connectionRepository.save(newConnection);
-                }
+                }  
         }
+        // Notify target user about unmatching without page reloading
+        messagingTemplate.convertAndSendToUser(
+        targetUser.getEmail(),
+        "/queue/unmatched",
+        Map.of("userId", currentUser.getId())
+        );
+        
     }
 
     //get the pending likes for card

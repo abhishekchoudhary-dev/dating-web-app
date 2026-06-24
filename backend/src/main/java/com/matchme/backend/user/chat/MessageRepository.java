@@ -29,7 +29,19 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT COUNT(m) FROM Message m WHERE m.sender = :sender AND m.receiver = :receiver AND m.readAt IS NULL")
     Long countUnreadFrom(@Param("sender") User sender, @Param("receiver") User receiver);
 
-    @Query("SELECT COUNT(m) FROM Message m WHERE m.receiver = :receiver AND m.readAt IS NULL")
+    //@Query("SELECT COUNT(m) FROM Message m WHERE m.receiver = :receiver AND m.readAt IS NULL")
+    //Long countAllUnread(@Param("receiver") User receiver);
+    @Query("""
+    SELECT COUNT(m) FROM Message m
+    WHERE m.receiver = :receiver
+    AND m.readAt IS NULL
+    AND EXISTS (
+        SELECT c FROM Connection c
+        WHERE c.status = 'MATCHED'
+        AND ((c.requester = m.sender AND c.receiver = :receiver)
+        OR (c.receiver = m.sender AND c.requester = :receiver))
+    )
+    """)
     Long countAllUnread(@Param("receiver") User receiver);
 
     @Modifying
