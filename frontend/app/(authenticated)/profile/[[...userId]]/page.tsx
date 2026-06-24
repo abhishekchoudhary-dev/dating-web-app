@@ -49,7 +49,7 @@ export default async function Profile(props: PageProps<'/profile/[[...userId]]'>
             <div className="flex justify-center">
                 <div className="relative w-fit">
                     <Avatar className="size-42">
-                        <AvatarImage src={user.profilePictureLink} alt="Profile photo" />
+                        <AvatarImage src={user.profilePictureLink ?? undefined} alt="Profile photo" />
                         <AvatarFallback className="text-xl">
                             <UserIcon size={50}/>
                         </AvatarFallback>

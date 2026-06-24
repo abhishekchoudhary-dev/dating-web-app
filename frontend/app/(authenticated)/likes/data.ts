@@ -21,6 +21,10 @@ export async function getLikedUserData(id: number): Promise<LikedUser> {
         fetchWithAuth<UserProfile>(`/users/${id}/profile`, { cache: 'no-store' }),
     ]);
 
+    if (!userRes.ok || !bioRes.ok) {
+        throw new Error(`Failed to fetch data for user ${id}`);
+    }
+    
     const user = userRes.data;
     const bio = bioRes.data;
     const profile = profileRes.ok ? profileRes.data : undefined;
