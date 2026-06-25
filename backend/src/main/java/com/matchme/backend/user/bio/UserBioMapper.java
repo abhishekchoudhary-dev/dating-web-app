@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class UserBioMapper {
     public UserBioResponse toResponse(UserBio userBio) {
         return UserBioResponse.builder()
+                .id(userBio.getUser().getId())
                 .age(userBio.getAge())
                 .gender(userBio.getGender())
                 .interests(userBio.getInterests())
