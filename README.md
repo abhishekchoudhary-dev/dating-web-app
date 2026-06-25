@@ -373,13 +373,12 @@ Partner preferences (age range, gender, distance)
 ##### Filtering System(hard filters)
 
 - Users are first filtered by hard constraints before any scoring occurs:
-```bash
-Gender preference of user must match the recommended user's gender
-Age of the recommended user must fall within the user's specified preference range
-Location must match exactly (must be from same location as per requirements)
-Already connected or dismissed users are excluded
-Score based fitering where candidates with very low match score are filtered 
-```
+    - Gender preference of user must match the recommended user's gender
+    - Age of the recommended user must fall within the user's specified preference range
+    - Location must match exactly (must be from same location as per requirements)
+    - Already connected or dismissed users are excluded
+    - Score based fitering where candidates with very low match score are filtered 
+
 ##### Scoring System
 
 - Candidates that pass the filters are then scored and ranked by compatibility:
