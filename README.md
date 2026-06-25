@@ -366,6 +366,28 @@ Partner preferences (age range, gender, distance)
 - Click Match to send a like or Dismiss to skip
 - If someone you liked has already liked you back — it is an instant match
 
+#### Recommendation System
+
+- The recommendation engine filters and scores potential matches for a user based on their profile preferences and bio data. It including filtering system and scoring system:-
+
+##### Filtering System(hard filters)
+
+- Users are first filtered by hard constraints before any scoring occurs:
+    - Gender preference of user must match the recommended user's gender
+    - Age of the recommended user must fall within the user's specified preference range
+    - Location must match exactly (must be from same location as per requirements)
+    - Already connected or dismissed users are excluded
+    - Score based fitering where candidates with very low match score are filtered 
+
+##### Scoring System
+
+- Candidates that pass the filters are then scored and ranked by compatibility:
+
+- **Interest score** — calculated by InterestScoreCalculator, rewards overlap between the user's interests and the candidate's interests
+- **Language score** — calculated by LanguageScoreCalculator, rewards shared languages between the user and the candidate
+
+- <b>The final score is a combination of both, and candidates are returned in descending score order so the best matches appear first.</b>
+
 ### Matches
 
 - Navigate to Matches in the sidebar
