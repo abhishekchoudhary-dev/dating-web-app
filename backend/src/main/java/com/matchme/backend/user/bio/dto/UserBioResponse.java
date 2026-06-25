@@ -12,6 +12,7 @@ import java.util.List;
 @Value
 @Builder
 public class UserBioResponse {
+    Long id;
     Integer age;
     Gender gender;
     List<Interest> interests;

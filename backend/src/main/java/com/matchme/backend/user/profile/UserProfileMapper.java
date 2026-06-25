@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 public class UserProfileMapper {
     public UserProfileResponse toResponse(UserProfile userProfile) {
         return UserProfileResponse.builder()
+                .id(userProfile.getUser().getId())
                 .aboutMe(userProfile.getAboutMe())
                 .build();
     }
