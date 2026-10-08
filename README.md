@@ -1,6 +1,6 @@
 # match-me web
 
-A full-stack recommendation application, to connect users based on their profile information.  
+A full-stack dating application, to connect users based on their profile information and distance proximity. 
 
 ## Tech Stack
 
