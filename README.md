@@ -1,4 +1,4 @@
-# match-me web
+# match-me dating web application
 
 A full-stack dating application, to connect users based on their profile information and distance proximity. 
 
